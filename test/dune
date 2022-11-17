@@ -1,2 +1,3 @@
 (test
- (name nijn))
+ (name nijn)
+ (libraries syntax file))
