@@ -22,14 +22,12 @@ module MakeSType = functor (B : Symb.NAME) -> struct
 
   let get_sort = B.get_symb_opt
 
-  let register_sort = B.register_name
+  let sort_register = B.register_name
 
-  let to_string = B.to_string
+  let sort_to_string = B.to_string
 
   (* Simple Types *)
-  let base_ty_mk name =
-    let name_opt = get_sort name in
-    Option.map (fun x -> Base x) name_opt
+  let base_ty_mk b = Base b
 
   let arr_ty_mk a b = Arrow (a, b)
 
@@ -46,9 +44,33 @@ module MakeSType = functor (B : Symb.NAME) -> struct
     | Base _ -> 0
     | Arrow (a,b) -> Int.max ( ty_order a + 1) (ty_order b)
 
+  let is_base = (function
+    | Base _ -> true
+    | Arrow _ -> false)
+
+  let rec ty_to_string ty =
+    match ty with
+    | Base b -> sort_to_string b
+    | Arrow (a,b) ->
+      if (is_base a) then
+        (ty_to_string a) ^ " ⟶ " ^ (ty_to_string b)
+      else
+        "(" ^ (ty_to_string a) ^ ")" ^ " ⟶ " ^ (ty_to_string b)
 end
 
 (* Sorts are indexed names *)
 module Sort = Symb.IndexedName()
 module SType = MakeSType(Sort)
 open SType
+
+let rec make_args_names' ty n m =
+  match ty with
+  | Base _ -> []
+  | Arrow (a, b) ->
+    if is_base a then
+      ["x"^(Int.to_string n)] @ make_args_names' b (n + 1) m
+    else
+      ["F"^(Int.to_string m)] @ make_args_names' b n (m + 1)
+
+let make_args_names ty =
+  make_args_names' ty 0 0

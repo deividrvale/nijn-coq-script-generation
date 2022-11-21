@@ -1,3 +1,7 @@
+(*
+  TODO: Review this interface for more generic names.
+   For instance, there must be a function to generate new, fresh names.
+*)
 (*-----------------------------------------------------------------------------
   Abstract name symbols
 -----------------------------------------------------------------------------*)
@@ -8,7 +12,7 @@ module type NAME = sig
   val equal : t -> t -> bool
   (** [equal t1 t2] is [true] iff [t1 == t2] *)
 
-  val symb_list : t list
+  val symb_list : unit -> t list
 
   val get_symb_opt : string -> t option
 
@@ -34,15 +38,14 @@ module IndexedName () : NAME = struct
 
   let equal = Int.equal
 
-  (* [names] is reference pointer to the list of names at certain index
-  it is initialized as the empty list
+  (* [names] is reference pointer to the list of names at certain index it is initialized as the empty list
   *)
   let names = ref []
 
   (* [idx_size] is the size of [names] *)
   let names_size = ref 0
 
-  let symb_list = List.init !names_size Fun.id
+  let symb_list _ = List.init !names_size Fun.id
 
   (* mem_idx str lst 0 is the index of the first element that equals str in lst *)
   let rec idx_of_name (name : string)

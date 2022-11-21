@@ -1,3 +1,4 @@
+open Ty.SType
 (*-----------------------------------------------------------------------------
   API for Function Symbols
 -----------------------------------------------------------------------------*)
@@ -12,6 +13,12 @@ val fn_equal : fn -> fn -> bool
 val fn_list : unit -> fn list
 (**
     [fn_list] returns the list of all function symbols names
+*)
+
+val fn_from_string : string -> fn option
+(**
+    [fn_from_string name] is [Some f] if [f] is registered with name [name],
+    [None] otherwise.
 *)
 
 val fn_register : string -> fn
@@ -35,6 +42,57 @@ val fn_compare : fn -> fn -> int
     and a positive integer if [x] is greater than [y].
 *)
 
+val fn_register_ty : fn -> ty -> unit
+(**
+    [fn_register_ty f t] adds the pair [(f, t)] to the stack.
+
+    {b Side effect:} the list of such pairs [(f,t)]
+    is kept as state in the terms module.
+*)
+
+val arity : fn -> ty
+(**
+    [arity f] returns the registered type of [f].
+
+    @raise Not_found if no type is registered for [f].
+*)
+
 (*-----------------------------------------------------------------------------
   API for Variables
 -----------------------------------------------------------------------------*)
+type var
+
+val var_equal : var -> var -> bool
+
+val var_list : unit -> var list
+
+val var_from_string : string -> var option
+
+val var_register : string -> var
+
+val var_to_string : var -> string
+
+(*-----------------------------------------------------------------------------
+  API for Terms
+-----------------------------------------------------------------------------*)
+type term =
+  | Fun of fn
+  | Var of var
+  | Lam of var * term
+  | App of term * term
+
+val tm_to_string : term -> string
+
+(*-----------------------------------------------------------------------------
+    de Bruijn Terms
+-----------------------------------------------------------------------------*)
+
+type ('f, 'v) bruijn =
+    | Fun of 'f
+    | Var of 'v
+    | Lam of ('f, 'v) bruijn
+    | App of ('f, 'v) bruijn * ('f, 'v) bruijn
+
+type nameless = (fn, int) bruijn
+
+val terms_to_bruijn : term -> nameless
