@@ -56,12 +56,12 @@ type term =
   | App of term * term
 
 let free_var t =
-  let rec fvar_acc = (fun t vs ->
+  let rec fvar_acc = (fun t acc ->
     match t with
     | Fun _ -> []
-    | Var v -> v :: vs
-    | Lam (v, t) -> Utils.List.remove var_equal v (fvar_acc t vs)
-    | App (s,t) -> (fvar_acc s vs) @ (fvar_acc t vs)
+    | Var v -> Utils.Lists.cons_uniq var_equal v acc
+    | App (t1,t2) -> (fvar_acc t1 acc) @ (fvar_acc t2 acc)
+    | Lam (v, t') -> Utils.Lists.remove var_equal v (fvar_acc t' acc)
     )
   in fvar_acc t []
 
@@ -105,9 +105,41 @@ let terms_to_bruijn t =
   let rec tm_brj_acc = (fun (tm : term) fvars ->
       match tm with
       | Fun f -> Fun f
-      | Var v -> Var (Utils.List.index_of var_equal v fvars)
+      | Var v -> Var (Utils.Lists.index_of var_equal v fvars)
       | Lam (v, t) -> Lam (tm_brj_acc t (v :: fvars))
       | App (s, t) -> App ((tm_brj_acc s fvars), (tm_brj_acc t fvars))
     )
   in tm_brj_acc t (free_var t)
 
+let rec nameless_to_string' (is_root : bool) (t : nameless) =
+  match t with
+  | Fun f -> fn_to_string f
+  | Var i -> " V " ^ (Int.to_string i)
+  | e -> (
+    if is_root then
+      show_app e
+    else
+      "(" ^ show_lam e ^ ")"
+  )
+and show_app = function
+  | App (f, x) -> show_app f ^ " · " ^ (nameless_to_string' false x)
+  | e -> nameless_to_string' false e
+and show_lam = function
+  | Lam t -> "λ" ^ show_lam t
+  | e -> show_app e
+
+let nameless_to_string = nameless_to_string' false
+
+let rec nameless_equal (s : nameless) (t : nameless) : bool =
+  match (s,t) with
+  | (Var x, Var y) -> x == y
+  | (Fun x, Fun y) -> fn_equal x y
+  | (App (s,s'), App (t,t')) ->
+    (nameless_equal s t) && (nameless_equal s' t')
+  | (Lam s, Lam t) -> nameless_equal s t
+  | _ -> false
+
+let term_equal (s : term) (t : term) : bool =
+  let (nml_s, nml_t) =
+    (terms_to_bruijn s, terms_to_bruijn t)
+  in nameless_equal nml_s nml_t

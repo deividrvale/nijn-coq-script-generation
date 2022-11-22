@@ -5,7 +5,7 @@ type keyword =
   | Require | Import | Open    | Scope
   | Proof   | Qed    | Defined | Definition
   | Match   | With   | End | Let | In
-  | Global  | Instance
+  | Global  | Instance | Progam | Inductive
 
 let keyword_to_string = function
   | Require -> "Require" | Import -> "Import"
@@ -15,7 +15,8 @@ let keyword_to_string = function
   | Match -> "match"     | With -> "with"
   | End -> "end"         | Let -> "let"
   | In -> "in"           | Global -> "Global"
-  | Instance -> "Instance"
+  | Instance -> "Instance" | Progam -> "Program"
+  | Inductive -> "Inductive"
 
 (* Vertical bars:
     idt is the identation character
@@ -73,9 +74,9 @@ let cmd_ind_dec keyword ident_dec obj_list =
 let match_cmd key body =
   let m_cmd = keyword_to_string Match in
   let w_cmd = keyword_to_string With in
-  (String.concat " " [m_cmd; key; w_cmd]) ^ "\n" ^
-  body ^ "^" ^ "\n" ^
-  keyword_to_string End
+  (String.concat " " [m_cmd; key; w_cmd]) ^
+  "\n" ^ body ^ "\n" ^
+  (keyword_to_string End)
 
 let let_cmd key body =
   String.concat " " [

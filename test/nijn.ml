@@ -11,15 +11,12 @@ let l_sort = sort_register "list"
 let sort_list = [l_sort; n_sort]
 let n_ty = base_ty_mk n_sort
 let l_ty = base_ty_mk l_sort
-let suc_ty = Arrow(n_ty, n_ty)
 let nil_ty = l_ty
 let cons_ty = Arrow (n_ty, Arrow (l_ty, l_ty))
 let map_ty = Arrow(Arrow(n_ty, n_ty), Arrow(l_ty, l_ty))
-let map_ty = arr_ty_mk (arr_ty_mk (arr_ty_mk l_ty l_ty) n_ty) (arr_ty_mk l_ty l_ty)
 
 (* let () =
   print_endline (ty_to_string map_ty) *)
-
 
 let fn_list = [
   (* fn_register "0";
@@ -29,20 +26,31 @@ let fn_list = [
   fn_register "map"
 ]
 
+let nil = List.nth fn_list 0
+let cons = List.nth fn_list 1
+let map = List.nth fn_list 2
 
 let () =
-  (* fn_register_ty (List.nth fn_list 0) n_ty; *)
-  (* fn_register_ty (List.nth fn_list 1) suc_ty; *)
-  fn_register_ty (List.nth fn_list 0) nil_ty;
-  fn_register_ty (List.nth fn_list 1) cons_ty;
-  fn_register_ty (List.nth fn_list 2) map_ty
+  fn_register_ty nil nil_ty;
+  fn_register_ty cons cons_ty;
+  fn_register_ty map map_ty
+let f = var_register "f"
+let x = var_register "x"
+let xs = var_register "xs"
+let map_nil = Syntax.Rule.rule_mk
+  (App( App(Fun map, Var f), Fun nil))
+  (Fun nil)
 
+let map_cons = Syntax.Rule.rule_mk
+  (App( App(Fun map, Var f), (App (App (Fun cons, Var x), Var xs )) ))
+  (App( App( Fun cons, App(Var f, Var x)), App (App (Fun map, Var f), Var xs)))
 
+let map_trs = [map_nil; map_cons]
 
 let () =
   (* Imports and Scope *)
   print_newline ();
-  print_endline (import ["Nijn.Nijn"; "Deivid"] );
+  print_endline (import ["Nijn.Nijn"] );
   print_endline (scope ["poly_scope"]);
   print_newline ();
   (* Sorts *)
@@ -59,20 +67,6 @@ let () =
   print_newline ();
   print_endline (arity_def_stm fn_list);;
   print_newline ();
-  print_endline (fn_abrv fn_list)
-
-let x = var_register "x"
-let y = var_register "y"
-
-let var_list = [x;y]
-
-let x' = var_from_string "x"
-
-let () =
-  print_endline (
-    String.concat ";" (
-      List.map var_to_string (
-        Syntax.Term.var_list ()
-        )
-    )
-  )
+  print_endline (fn_abrv fn_list);
+  (* print_endline (gen_ctx 7) *)
+  print_endline (rules_def_stm map_trs)

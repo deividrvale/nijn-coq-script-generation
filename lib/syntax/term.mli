@@ -83,6 +83,10 @@ type term =
 
 val tm_to_string : term -> string
 
+val free_var : term -> var list
+
+val term_equal : term -> term -> bool
+
 (*-----------------------------------------------------------------------------
     de Bruijn Terms
 -----------------------------------------------------------------------------*)
@@ -96,3 +100,7 @@ type ('f, 'v) bruijn =
 type nameless = (fn, int) bruijn
 
 val terms_to_bruijn : term -> nameless
+
+val nameless_to_string : nameless -> string
+
+val nameless_equal : nameless -> nameless -> bool

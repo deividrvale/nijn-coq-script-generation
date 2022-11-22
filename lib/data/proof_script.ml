@@ -30,7 +30,7 @@ let sort_def_stm (sort_dec : sort_dec) =
   let def_body =
     ident_vbar String.empty (List.map (fun s -> (sort_to_cnstr s, String.empty, String.empty)) sort_dec)
   in
-  cmd_def Definition "base_types" def_body
+  cmd_def Inductive "base_types" def_body
 
 let rec sort_abrv (sort_list : sort_dec) =
   match sort_list with
@@ -53,13 +53,13 @@ let fn_def_stm fn_dec =
     List.map (fun s -> (fn_to_ctrs s, "", "")) fn_dec
   )
   in
-  cmd_def Definition "fun_symbols" def_body
+  cmd_def Inductive "fun_symbols" def_body
 
 let arity_def_stm fn_list =
   let match_body =
     ident_vbar "  " (
       List.map (fun s ->
-        (fn_to_ctrs s, "=>", ty_to_string (arity s))) fn_list
+        (fn_to_ctrs s, " => ", ty_to_string (arity s))) fn_list
     )
   in
   let def_body =
@@ -69,17 +69,46 @@ let arity_def_stm fn_list =
 let rec fn_abrv = function
   | [] -> String.empty
   | hd :: tl ->
-    let (fn_name, args) = (fn_to_string hd, Syntax.Ty.make_args_names (arity hd))
-    in(
-      let args_str = String.concat " " args in
-      let app_args =
-        if args == [] then "" else "· " ^ (String.concat " · " args)
-      in
+    let fn_name = fn_to_string hd in
       (cmd_def Definition
-      (String.concat " " [fn_name;"{C}";":";args_str;"tm map_ar C _"])
-      (String.concat " " ["BaseTm";(fn_to_ctrs hd);app_args]))
+      (String.concat " " [fn_name;"{C}";":";"tm map_ar C _"])
+      (String.concat " " ["BaseTm";(fn_to_ctrs hd)]))
       ^ "\n" ^ fn_abrv tl
-    )
+
+(* Printing of rules *)
+let gen_ctx n =
+  let ctx_dash = List.init n (fun _ -> "_") in
+  "(" ^ (String.concat " ,, " (ctx_dash @ ["∙"])) ^
+  ")" ^ " _" ^ "\n"
+
+let rule_tm_to_string (f : Syntax.Rule.rule -> term) r =
+  nameless_to_string (terms_to_bruijn (f r))
+
+let rec rules_def_stm (afs : Syntax.Rule.trs) =
+  let open Syntax.Rule in
+  match afs with
+  | [] -> String.empty
+  | hd :: tl -> (
+    (* determine the number of free variables in the lhs *)
+    let n = List.length (free_var (lhs hd)) in
+    (* generate the string for context *)
+    let ctx = gen_ctx n in
+    (*  *)
+    let def_body =
+      (* def identifier *)
+      "map_cons := " ^ "\n" ^
+      (* name of the rule *)
+      "    make_rewrite" ^ "\n" ^
+      (* context *)
+      "    " ^ ctx ^
+      (* lhs *)
+      "    " ^ rule_tm_to_string lhs hd ^ "\n" ^
+      (* rhs *)
+      "    " ^ rule_tm_to_string rhs hd
+    in
+    (cmd_stm Progam ~keyword_list:[Definition] def_body) ^ "\n" ^
+    rules_def_stm tl
+  )
 
 (* Constant Proofs, always added to the script. *)
 let dec_eq_ty_proof =
