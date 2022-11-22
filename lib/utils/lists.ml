@@ -16,7 +16,7 @@ let index_of eq x xs =
 let rec remove (eq : 'a -> 'a -> bool) (x : 'a) (xs : 'a list) : 'a list =
   List.filter (fun e -> not (eq x e)) xs
 
-let print_els (f : 'a -> string) (xs : 'a list) : unit =
+let print_list (f : 'a -> string) (xs : 'a list) : unit =
   print_endline (
     "[" ^ (String.concat ";" (List.map f xs)) ^ "]"
   )
