@@ -1,5 +1,7 @@
 open Term
 
+exception Invalid_rule of string
+
 type rule = term * term
 
 type trs = rule list
