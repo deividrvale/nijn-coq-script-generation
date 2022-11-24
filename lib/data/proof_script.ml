@@ -2,8 +2,6 @@ open Syntax.Ty.SType
 open Syntax.Term
 open CoqGrammar
 
-
-
 (*-----------------------------------------------------------------------------
   Concrete functions functions printing coq syntax.
 -----------------------------------------------------------------------------*)
@@ -86,29 +84,30 @@ let rule_tm_to_string (f : Syntax.Rule.rule -> term) r =
 
 let rec rules_def_stm (afs : Syntax.Rule.trs) =
   let open Syntax.Rule in
-  match afs with
-  | [] -> String.empty
-  | hd :: tl -> (
-    (* determine the number of free variables in the lhs *)
-    let n = List.length (free_var (lhs hd)) in
-    (* generate the string for context *)
-    let ctx = gen_ctx n in
-    (*  *)
-    let def_body =
-      (* def identifier *)
-      "map_cons := " ^ "\n" ^
-      (* name of the rule *)
-      "    make_rewrite" ^ "\n" ^
-      (* context *)
-      "    " ^ ctx ^
-      (* lhs *)
-      "    " ^ rule_tm_to_string lhs hd ^ "\n" ^
-      (* rhs *)
-      "    " ^ rule_tm_to_string rhs hd
-    in
-    (cmd_stm Progam ~keyword_list:[Definition] def_body) ^ "\n" ^
-    rules_def_stm tl
-  )
+  let rec rules_def_stm' = (fun afs i ->
+    match afs with
+    | [] -> String.empty
+    | hd :: tl ->
+      (* determine the number of free variables in the lhs *)
+      let n = List.length (free_var (lhs hd)) in
+      (* generate the string for context *)
+      let ctx = gen_ctx n in
+      let def_body =
+        (* index_of rule *)
+        "rule_" ^ Int.to_string i ^
+        " := " ^ "\n" ^
+        (* name of the rule *)
+        "    make_rewrite" ^ "\n" ^
+        (* context *)
+        "    " ^ ctx ^
+        (* lhs *)
+        "    " ^ rule_tm_to_string lhs hd ^ "\n" ^
+        (* rhs *)
+        "    " ^ rule_tm_to_string rhs hd
+      in
+      (cmd_stm Progam ~keyword_list:[Definition] def_body) ^ "\n" ^
+      (rules_def_stm' tl (i + 1))
+  ) in rules_def_stm' afs 0
 
 (* Constant Proofs, always added to the script. *)
 let dec_eq_ty_proof =

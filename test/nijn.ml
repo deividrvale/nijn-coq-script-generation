@@ -1,7 +1,9 @@
 (* open Data.Input_file *)
 open File.Wanda
+(* open Syntax *)
 open Syntax.Ty.SType
 open Syntax.Term
+open Syntax.Poly
 open File.Proof_script
 
 (* Hardcoding map system for testing purposes *)
@@ -70,3 +72,14 @@ let () =
   print_endline (fn_abrv fn_list);
   (* print_endline (gen_ctx 7) *)
   print_endline (rules_def_stm map_trs)
+
+let p_x = Var (FOVar (PolV.register_name "x"))
+let p_y = Var (FOVar (PolV.register_name "y"))
+
+let pol1 = Add (App ((HOVar (PolV.register_name "F")), Add (Num 1, Mul (Num 3, Add (Add (p_x, p_y), Num 7)))), p_x)
+
+let s_pol1 = simplify pol1
+
+let () =
+  print_endline (Syntax.Poly.to_string pol1 var_to_string);
+  print_endline (Syntax.Poly.to_string s_pol1 var_to_string)
