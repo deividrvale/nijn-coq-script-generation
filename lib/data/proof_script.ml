@@ -82,6 +82,7 @@ let gen_ctx n =
 let rule_tm_to_string (f : Syntax.Rule.rule -> term) r =
   nameless_to_string (terms_to_bruijn (f r))
 
+
 let rec rules_def_stm (afs : Syntax.Rule.trs) =
   let open Syntax.Rule in
   let rec rules_def_stm' = (fun afs i ->
