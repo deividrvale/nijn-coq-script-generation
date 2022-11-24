@@ -3,7 +3,7 @@ open Ty.SType
   API for Function Symbols
 -----------------------------------------------------------------------------*)
 type fn
-(** Function Symbols  *)
+(** Function Symbols. *)
 
 val fn_equal : fn -> fn -> bool
 (**

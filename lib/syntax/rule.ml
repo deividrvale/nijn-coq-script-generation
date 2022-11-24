@@ -21,3 +21,7 @@ let equal (r : rule) (r' : rule) : bool =
 
 let to_string r =
   tm_to_string (lhs r) ^ "==>" ^ tm_to_string (rhs r)
+
+let get_label rule trs : string =
+  "rule_" ^
+  Int.to_string (Utils.Lists.index_of equal rule trs)

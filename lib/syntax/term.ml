@@ -3,8 +3,10 @@ open Ty.SType
   Function Symbols
 -----------------------------------------------------------------------------*)
 
-module FSym = Symb.IndexedName()
+module FSym = Symb.IndexedName ()
 type fn = FSym.t
+
+module FnMap = Map.Make (FSym)
 
 let fn_equal = FSym.equal
 let fn_list = FSym.symb_list
@@ -64,7 +66,6 @@ let free_var t =
     | Lam (v, t') -> Utils.Lists.remove var_equal v (fvar_acc t' acc)
     )
   in fvar_acc t []
-
 
 (* to_string *)
 let rec tm_to_string' (b : bool) (t : term) =

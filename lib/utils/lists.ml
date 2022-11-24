@@ -21,7 +21,7 @@ let print_list (f : 'a -> string) (xs : 'a list) : unit =
     "[" ^ (String.concat ";" (List.map f xs)) ^ "]"
   )
 
-let rec member (eq : 'a -> 'a -> bool) (x : 'a) (xs : 'a list) : bool =
+let member (eq : 'a -> 'a -> bool) (x : 'a) (xs : 'a list) : bool =
   let xs_eq =
     List.filter (fun y -> eq x y) xs
   in match xs_eq with

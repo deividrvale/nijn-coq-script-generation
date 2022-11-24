@@ -35,6 +35,11 @@ val equal : rule -> rule -> bool
 
 val to_string : rule -> string
 (**
-    [to_string r] return a string representation of
+    [to_string r] returns a string representation of
     [r].
+*)
+
+val get_label : rule -> trs -> string
+(**
+    [get_label trs] returns the string label of the trs [trs].
 *)

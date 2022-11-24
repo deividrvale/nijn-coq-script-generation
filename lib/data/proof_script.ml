@@ -5,7 +5,7 @@ open CoqGrammar
 (*-----------------------------------------------------------------------------
   Concrete functions functions printing coq syntax.
 -----------------------------------------------------------------------------*)
-(* List of imports *)
+(* List of imports ----------------------------------------------------------*)
 
 type import = string list
 type scope = string list
@@ -16,7 +16,7 @@ let import (import : import) =
 let scope (scope : scope) =
   cmd_stm Open ~keyword_list:[Scope] (String.concat " " scope)
 
-(* Sorts *)
+(* Sorts --------------------------------------------------------------------*)
 
 type sort_dec = sort list
 
@@ -38,7 +38,7 @@ let rec sort_abrv (sort_list : sort_dec) =
       cmd_def Definition (sort_to_string hd) (sort_to_cnstr hd)
     in def_str ^ "\n" ^ sort_abrv tl
 
-(* Function symbols *)
+(* Fun Symbols --------------------------------------------------------------*)
 
 type fn_dec = fn list
 
@@ -73,7 +73,7 @@ let rec fn_abrv = function
       (String.concat " " ["BaseTm";(fn_to_ctrs hd)]))
       ^ "\n" ^ fn_abrv tl
 
-(* Printing of rules *)
+(* Rules --------------------------------------------------------------------*)
 let gen_ctx n =
   let ctx_dash = List.init n (fun _ -> "_") in
   "(" ^ (String.concat " ,, " (ctx_dash @ ["∙"])) ^
@@ -109,6 +109,24 @@ let rec rules_def_stm (afs : Syntax.Rule.trs) =
       (cmd_stm Progam ~keyword_list:[Definition] def_body) ^ "\n" ^
       (rules_def_stm' tl (i + 1))
   ) in rules_def_stm' afs 0
+
+(* TRS ----------------------------------------------------------------------*)
+let afs_df_stm (afs : Syntax.Rule.trs) (name : string) =
+  let rec rules_label_list = ( fun trs ->
+    match trs with
+    | [] -> "nil"
+    | hd :: tl ->
+      Syntax.Rule.get_label hd afs ^
+      " :: " ^
+      (rules_label_list tl)
+  ) in
+  cmd_def Definition name
+  ("  make_afs\n" ^
+  "    map_ar \n" ^
+  "    (" ^ rules_label_list afs ^ ")")
+
+(* Interpretation -----------------------------------------------------------*)
+
 
 (* Constant Proofs, always added to the script. *)
 let dec_eq_ty_proof =
