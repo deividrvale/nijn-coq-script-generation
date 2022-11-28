@@ -46,6 +46,34 @@ let map_cons = Syntax.Rule.rule_mk
 
 let map_trs = [map_nil; map_cons]
 
+(* Setting up the interpretation *)
+let x_0 = FOVar (PolV.register_name "x0")
+let x_1 = FOVar (PolV.register_name "x1")
+let f_1 = HOVar (PolV.register_name "F0")
+
+let int_nil = Polfun (
+  [],
+  Num 3)
+let int_cons = Polfun (
+  [V1 x_0; V1 x_1], Num 3)
+
+let int_map = Polfun (
+  [V1 x_0; V2 f_1],
+  Add (
+    Mul (Num 3, Var x_0),
+    Add (
+      App (f_1, Var x_0),
+      Mul (
+        Num 3,
+        Mul (
+          Var x_0,
+          App (f_1, Var x_0)
+        )
+      )
+    )
+  )
+)
+
 let () =
   (* Imports and Scope *)
   print_newline ();
@@ -64,22 +92,37 @@ let () =
   print_newline ();
   print_endline dec_eq_fn;
   print_newline ();
-  print_endline (arity_def_stm fn_list);;
+  print_endline (arity_def_stm fn_list);
   print_newline ();
   print_endline (fn_abrv fn_list);
   (* Rules *)
   print_endline (rules_def_stm map_trs);
   (* Def of trs *)
-  print_endline (afs_df_stm map_trs "map_trs");
-  (* Utils.Lists.print_list FSym.to_string (FSym.symb_list ()) *)
+  print_endline (afs_df_stm map_trs "map_trs")
 
-(* let p_x = Var (FOVar (PolV.register_name "x")) *)
-(* let p_y = Var (FOVar (PolV.register_name "y")) *)
+let v_x = FOVar (PolV.register_name "x")
+let p_x = Var (v_x)
+let p_y = Var (FOVar (PolV.register_name "y"))
 
-(* let pol1 = Add (App ((HOVar (PolV.register_name "F")), Add (Num 1, Mul (Num 3, Add (Add (p_x, p_y), Num 7)))), p_x) *)
+let fake_itp = [(nil, int_nil);
+  (cons, int_cons);
+  (map, int_map)
+]
 
-(* let s_pol1 = simplify pol1 *)
+let () =
+  print_newline ();
+  (* print_endline (poly_to_stm pol1); *)
+  (* print_newline (); *)
+  print_endline (itp_def_stm fake_itp "map_trs");
+  print_endline (sn_def_stm "map_trs")
 
-(* let () =
-  print_endline (Syntax.Poly.to_string pol1 var_to_string);
-  print_endline (Syntax.Poly.to_string s_pol1 var_to_string) *)
+(* let (test_term : term) =
+App( App( Fun cons, App(Var f, Var x)), App (App (Fun map, Var f), Var xs))
+
+let () =
+  print_endline "Original Named Term:";
+  print_endline (tm_to_string test_term);
+  print_endline "Free vars of that term:";
+  Utils.Lists.print_list Syntax.Term.var_to_string (free_var test_term);
+  print_endline "Nameless term:";
+  print_endline (nameless_to_string (terms_to_bruijn test_term)) *)

@@ -65,18 +65,17 @@ let rec get_poly_vars' poly vs =
 let get_vars poly =
   Lists.remove_duplicates var_equal (get_poly_vars' poly [])
 
-let rec to_string (poly : poly) (var_to_string : var -> string) =
+(* test whether a variable x occurs in the poly p*)
+let rec var_occurs (poly : poly) (x : var) =
   match poly with
-  | Num n -> "P_const " ^ (Int.to_string n)
-  | Var (FOVar _ as v) -> var_to_string (V1 v)
-  | Add (pol1, pol2) ->
-    to_string pol1 var_to_string ^ " + " ^ to_string pol2 var_to_string
-  | Mul (pol1, pol2) ->
-    to_string pol1 var_to_string ^ " * " ^ to_string pol2 var_to_string
-  | App (v, pol) ->
-    var_to_string (V2 v) ^
-    " ·P " ^ "(" ^ to_string pol var_to_string ^ ")"
-
+  | Num _ -> false
+  | Add (p, p') ->
+    (var_occurs p x) || (var_occurs p' x)
+  | Mul (p, p') ->
+      (var_occurs p x) || (var_occurs p' x)
+  | Var v -> var_equal (V1 v) x
+  | App (v, p) ->
+    (var_equal (V2 v) x) || (var_occurs p x)
 (* This section reduce *)
 
 let rec reduce = function
@@ -111,3 +110,16 @@ let rec fix_point (eq : 'a -> 'a -> bool) (f : 'a -> 'a) (x : 'a) =
     if eq f_a x then x else fix_point eq f f_a
 
 let simplify = fix_point poly_equal reduce
+
+let rec to_string (var_to_string : var -> string) (p : poly) =
+  let poly = simplify p in
+  match poly with
+  | Num n -> "P_const " ^ (Int.to_string n)
+  | Var (FOVar _ as v) -> var_to_string (V1 v)
+  | Add (pol1, pol2) ->
+    to_string var_to_string pol1  ^ " + " ^ to_string var_to_string pol2
+  | Mul (pol1, pol2) ->
+    to_string var_to_string pol1  ^ " * " ^ to_string var_to_string pol2
+  | App (v, pol) ->
+    var_to_string (V2 v) ^
+    " ·P " ^ "(" ^ to_string var_to_string pol  ^ ")"

@@ -1,5 +1,6 @@
 open Syntax.Ty.SType
 open Syntax.Term
+open Syntax.Poly
 open CoqGrammar
 
 (*-----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ let rec sort_abrv (sort_list : sort_dec) =
   | [] -> String.empty
   | hd :: tl ->
     let def_str =
-      cmd_def Definition (sort_to_string hd) (sort_to_cnstr hd)
+      cmd_def Definition (sort_to_string hd) ("Base " ^ (sort_to_cnstr hd))
     in def_str ^ "\n" ^ sort_abrv tl
 
 (* Fun Symbols --------------------------------------------------------------*)
@@ -114,7 +115,7 @@ let rec rules_def_stm (afs : Syntax.Rule.trs) =
 let afs_df_stm (afs : Syntax.Rule.trs) (name : string) =
   let rec rules_label_list = ( fun trs ->
     match trs with
-    | [] -> "nil"
+    | [] -> "List.nil"
     | hd :: tl ->
       Syntax.Rule.get_label hd afs ^
       " :: " ^
@@ -126,6 +127,81 @@ let afs_df_stm (afs : Syntax.Rule.trs) (name : string) =
   "    (" ^ rules_label_list afs ^ ")")
 
 (* Interpretation -----------------------------------------------------------*)
+
+(* Helper function:
+   Integer indexes to Coq context indexes notation *)
+let rec to_ctx_idx i =
+  if i <= 0 then "Vz" else "(Vs " ^ to_ctx_idx (i - 1) ^ ")"
+
+(* Helper function:
+   Print the formal statement of a poly variable.
+   Given that polynomial interpretations are of the form
+   Lam [x0, ..., xn] . <Poly>,
+   the printing of each of of the x_i's depends whether
+   the x_i's appear in the body of <Poly>.
+   If it does, we declare it with a name, otherwise
+   we just print a Lam P.*)
+let poly_var_to_stm (v : var) occurs v_idx =
+  if occurs then
+  begin
+    "λP let " ^
+    Syntax.Poly.var_to_string v ^
+    " := " ^
+    "P_var " ^
+    to_ctx_idx v_idx ^
+    " in"
+  end
+  else
+    "λP"
+
+(* Helper function:
+   Print the formal declaration of each variable in
+   the polynomial function Lam [x0, ..., xn] . <poly> *)
+let poly_vars_to_stm ((Polfun (vs, pol)) : poly_fun) =
+  let rec poly_vars_to_stm' = (fun vs p idx ->
+    match vs with
+    | [] -> ""
+    | hd :: tl ->
+      let occurs = var_occurs p hd in
+      (poly_var_to_stm hd occurs idx) ^ "\n" ^
+      poly_vars_to_stm' tl p (idx + 1)
+  ) in poly_vars_to_stm' vs pol 0
+
+(* Helper function:
+   prints the polynomial function Lam [x0, ..., xn] . <poly>. *)
+let poly_to_stm ((Polfun (_, pol)) as poly_fun : poly_fun) =
+  (poly_vars_to_stm poly_fun) ^
+  "(" ^
+    "P_base (" ^ (to_string var_to_string pol) ^ ")" ^
+  ")"
+
+(*  *)
+let poly_match_body (itp : (fn * poly_fun) list) =
+    ident_vbar ""
+      (List.map (fun (f,p) -> (fn_to_ctrs f, " => \n", poly_to_stm p)) itp )
+
+(*  *)
+let itp_def_stm (itp : (fn * poly_fun) list) (name : string) =
+  let match_body = poly_match_body itp in
+  let def_body =
+  match_cmd "f" match_body in
+  cmd_def Definition
+  ("map_fun_poly f : poly ∙ (arity " ^ name ^ " f)") def_body
+
+let sn_def_stm (name : string) =
+  let def_proof = cmd_proof Qed "solve_poly_SN map_fun_poly." in cmd_stm Definition ("trs_isSN : isSN " ^ name) ^ "\n" ^
+  def_proof
+
+(* let poly_func (p : poly) = *)
+  (* let v = get_vars p in *)
+
+(* let rec itp_def_stm (itp : (fn * Syntax.Poly.poly) list) =
+  let int_mappings =
+    ident_vbar " "
+    (
+      List.map (fun (f,p) -> (fn_to_ctrs f, "=>", Syntax.Poly.to_string  p)) itp
+    ) *)
+
 
 
 (* Constant Proofs, always added to the script. *)

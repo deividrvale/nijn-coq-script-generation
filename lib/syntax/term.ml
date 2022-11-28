@@ -62,10 +62,11 @@ let free_var t =
     match t with
     | Fun _ -> []
     | Var v -> Utils.Lists.cons_uniq var_equal v acc
-    | App (t1,t2) -> (fvar_acc t1 acc) @ (fvar_acc t2 acc)
+    | App (t1,t2) ->
+      (fvar_acc t1 acc) @ (fvar_acc t2 acc)
     | Lam (v, t') -> Utils.Lists.remove var_equal v (fvar_acc t' acc)
     )
-  in fvar_acc t []
+  in Utils.Lists.remove_duplicates var_equal (fvar_acc t [])
 
 (* to_string *)
 let rec tm_to_string' (b : bool) (t : term) =
