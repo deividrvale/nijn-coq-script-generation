@@ -1,7 +1,7 @@
 open Syntax.Ty.SType
 open Syntax.Term
 open Syntax.Poly
-open File.Proof_script
+open Coq.Proof_script
 
 (* Hardcoding map system for testing purposes *)
 (* Declaration of sort names *)
@@ -99,10 +99,6 @@ let () =
   print_endline (rules_def_stm map_trs);
   (* Def of trs *)
   print_endline (afs_df_stm map_trs "map_trs")
-
-let v_x = FOVar (PolV.register_name "x")
-let p_x = Var (v_x)
-let p_y = Var (FOVar (PolV.register_name "y"))
 
 let fake_itp = [(nil, int_nil);
   (cons, int_cons);

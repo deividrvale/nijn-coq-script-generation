@@ -1,11 +1,12 @@
+open Grammar
 open Syntax.Ty.SType
 open Syntax.Term
 open Syntax.Poly
-open CoqGrammar
 
 (*-----------------------------------------------------------------------------
   Concrete functions functions printing coq syntax.
 -----------------------------------------------------------------------------*)
+
 (* List of imports ----------------------------------------------------------*)
 
 type import = string list
@@ -27,7 +28,9 @@ let sort_to_cnstr (s : sort) =
 
 let sort_def_stm (sort_dec : sort_dec) =
   let def_body =
-    ident_vbar String.empty (List.map (fun s -> (sort_to_cnstr s, String.empty, String.empty)) sort_dec)
+    ident_vbar String.empty (List.map (fun s ->
+      (sort_to_cnstr s, String.empty, String.empty)) sort_dec
+    )
   in
   cmd_def Inductive "base_types" def_body
 
@@ -83,8 +86,7 @@ let gen_ctx n =
 let rule_tm_to_string (f : Syntax.Rule.rule -> term) r =
   nameless_to_string (terms_to_bruijn (f r))
 
-
-let rec rules_def_stm (afs : Syntax.Rule.trs) =
+let rules_def_stm (afs : Syntax.Rule.trs) =
   let open Syntax.Rule in
   let rec rules_def_stm' = (fun afs i ->
     match afs with
@@ -189,22 +191,11 @@ let itp_def_stm (itp : (fn * poly_fun) list) (name : string) =
   ("map_fun_poly f : poly ∙ (arity " ^ name ^ " f)") def_body
 
 let sn_def_stm (name : string) =
-  let def_proof = cmd_proof Qed "solve_poly_SN map_fun_poly." in cmd_stm Definition ("trs_isSN : isSN " ^ name) ^ "\n" ^
+  let def_proof = cmd_proof Qed "solve_poly_SN map_fun_poly."
+  in cmd_stm Definition ("trs_isSN : isSN " ^ name) ^ "\n" ^
   def_proof
 
-(* let poly_func (p : poly) = *)
-  (* let v = get_vars p in *)
-
-(* let rec itp_def_stm (itp : (fn * Syntax.Poly.poly) list) =
-  let int_mappings =
-    ident_vbar " "
-    (
-      List.map (fun (f,p) -> (fn_to_ctrs f, "=>", Syntax.Poly.to_string  p)) itp
-    ) *)
-
-
-
-(* Constant Proofs, always added to the script. *)
+(* Decidable equality pr-----------------------------------------------------*)
 let dec_eq_ty_proof =
   cmd_proof Defined "decEq_finite."
 
@@ -212,9 +203,15 @@ let dec_eq_fn_proof =
   cmd_proof Defined "decEq_finite."
 
 let dec_eq_ty =
-  (cmd_stm Global ~keyword_list:[Instance] "decEq_base_types : decEq base_types") ^ "\n" ^
+  (cmd_stm Global
+          ~keyword_list:[Instance]
+          "decEq_base_types : decEq base_types") ^
+  "\n" ^
   dec_eq_ty_proof
 
 let dec_eq_fn =
-  cmd_stm Global ~keyword_list:[Instance] "decEq_fun_symbols : decEq fun_symbols" ^ "\n" ^
+  (cmd_stm Global
+          ~keyword_list:[Instance]
+          "decEq_fun_symbols : decEq fun_symbols") ^
+  "\n" ^
   dec_eq_fn_proof

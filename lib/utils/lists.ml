@@ -1,5 +1,5 @@
 (* Polymorphic utilities over lists. *)
-(* index_of needs a comparison operator on the elements of the list *)
+(* index_of needs an equality operator on the elements of the list *)
 let rec index_of' (eq : ('a -> 'a -> bool)) (x : 'a) (xs : 'a list) (idx : int)
                   : int =
   match xs with
@@ -13,7 +13,7 @@ let rec index_of' (eq : ('a -> 'a -> bool)) (x : 'a) (xs : 'a list) (idx : int)
 let index_of eq x xs =
   index_of' eq x xs 0
 
-let rec remove (eq : 'a -> 'a -> bool) (x : 'a) (xs : 'a list) : 'a list =
+let remove (eq : 'a -> 'a -> bool) (x : 'a) (xs : 'a list) : 'a list =
   List.filter (fun e -> not (eq x e)) xs
 
 let print_list (f : 'a -> string) (xs : 'a list) : unit =
