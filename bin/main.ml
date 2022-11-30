@@ -16,8 +16,8 @@ let spec_list = [
 
 (* The main "function" *)
 let () =
-  (* Arg.parse spec_list anon_cmd usage_msg; *)
-  (* print_endline ("\nOnijn has " ^ (Int.to_string (List.length !input_files)) ^ " Files to be Compiled"); *)
-  (* Utils.Lists.print_list (fun x -> "\n" ^ x) !input_files; *)
+  Arg.parse spec_list anon_cmd usage_msg;
+  print_endline ("\n Number of files to be processed: "
+    ^ (Int.to_string (List.length !input_files)));
+  Utils.Lists.print_list (fun x -> "\n" ^ x) !input_files;
   List.iter (fun x -> print_endline (Utils.Files.get_file_content x) ) !input_files
-  (* print_endline (Utils.Files.get_file_content "/Documents/wanda/benchmarks/poly/Mixed_HO_10_curry1.afs") *)
