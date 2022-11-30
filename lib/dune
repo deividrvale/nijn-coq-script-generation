@@ -1,2 +1,3 @@
 (library
- (name nijn))
+ (name nijn)
+ (public_name nijn))

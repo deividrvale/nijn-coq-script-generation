@@ -3,6 +3,8 @@ open Syntax.Term
 open Syntax.Poly
 open Coq.Proof_script
 
+open Wanda_parser
+
 (* Hardcoding map system for testing purposes *)
 (* Declaration of sort names *)
 let n_sort = sort_register "nat"
@@ -122,3 +124,31 @@ let () =
   Utils.Lists.print_list Syntax.Term.var_to_string (free_var test_term);
   print_endline "Nameless term:";
   print_endline (nameless_to_string (terms_to_bruijn test_term)) *)
+
+  (* Tests with HO modules *)
+(* module Hello : sig
+  val something : int
+end = struct
+  let something = 1
+end
+
+let f = fun x -> 1
+
+module type T = functor (X : sig end) -> sig
+
+end
+
+module F (S : T) = struct
+
+end *)
+
+open Wanda_parser
+
+let s = "MAYBE"
+
+let parsed_string =
+  Wanda_parser.parse_from_string Wanda_parser.p_answer Wanda_parser.wanda_lexer s
+
+let () =
+  print_endline "Testing Parsers Now ------------------------------------------";
+  print_endline (File.Wanda.answer_to_string parsed_string)

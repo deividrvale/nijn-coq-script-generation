@@ -1,0 +1,9 @@
+(library
+ (name wanda_parser)
+ (libraries syntax file parsers))
+
+(menhir
+ (modules par))
+
+(ocamllex
+ (modules lex))

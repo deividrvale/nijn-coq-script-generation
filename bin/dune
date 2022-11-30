@@ -1,4 +1,4 @@
 (executable
- (public_name nijn)
+ (public_name onijn)
  (name main)
- (libraries nijn syntax))
+ (libraries nijn syntax utils))

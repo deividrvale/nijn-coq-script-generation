@@ -1,5 +1,13 @@
 (* open Syntax.Ty.SType *)
 
+
+type answer = YES | NO | MAYBE
+
+let answer_to_string = function
+  | YES -> "YES"
+  | NO -> "NO"
+  | MAYBE -> "MAYBE"
+
 (*-----------------------------------------------------------------------------
   Type Declaration
 -----------------------------------------------------------------------------*)
