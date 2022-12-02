@@ -182,7 +182,7 @@ type poly_tree =
   | Add of poly_tree * poly_tree
   | Mul of poly_tree * poly_tree
 
-let rec poly_tree_to_poly = function
+(* let rec poly_tree_to_poly = function
   | Num i -> Poly.Num i
   | FOName x ->
     if Option.is_some (Poly.PolV.get_symb_opt x) then
@@ -199,7 +199,7 @@ let rec poly_tree_to_poly = function
   | Add (p, p') ->
     Poly.Add (poly_tree_to_poly p, poly_tree_to_poly p')
   | Mul (p,p') ->
-    Poly.Mul (poly_tree_to_poly p, poly_tree_to_poly p')
+    Poly.Mul (poly_tree_to_poly p, poly_tree_to_poly p') *)
 
 
 type fun_poly =

@@ -143,11 +143,11 @@ let rec to_ctx_idx i =
    the x_i's appear in the body of <Poly>.
    If it does, we declare it with a name, otherwise
    we just print a Lam P.*)
-let poly_var_to_stm (v : var) occurs v_idx =
+let poly_var_to_stm (v : name) occurs v_idx =
   if occurs then
   begin
     "λP let " ^
-    Syntax.Poly.var_to_string v ^
+    Syntax.Poly.PolV.to_string v ^
     " := " ^
     "P_var " ^
     to_ctx_idx v_idx ^
@@ -159,7 +159,8 @@ let poly_var_to_stm (v : var) occurs v_idx =
 (* Helper function:
    Print the formal declaration of each variable in
    the polynomial function Lam [x0, ..., xn] . <poly> *)
-let poly_vars_to_stm ((Polfun (vs, pol)) : poly_fun) =
+let poly_vars_to_stm ( f : poly_fun) =
+  let (vs, pol) = (get_names f, get_poly f) in
   let rec poly_vars_to_stm' = (fun vs p idx ->
     match vs with
     | [] -> ""
@@ -171,10 +172,11 @@ let poly_vars_to_stm ((Polfun (vs, pol)) : poly_fun) =
 
 (* Helper function:
    prints the polynomial function Lam [x0, ..., xn] . <poly>. *)
-let poly_to_stm ((Polfun (_, pol)) as poly_fun : poly_fun) =
+let poly_to_stm poly_fun =
+  let pol = get_poly poly_fun in
   (poly_vars_to_stm poly_fun) ^
   "(" ^
-    "P_base (" ^ (to_string var_to_string pol) ^ ")" ^
+    "P_base (" ^ (to_string pol) ^ ")" ^
   ")"
 
 (*  *)
