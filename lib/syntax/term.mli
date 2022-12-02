@@ -15,11 +15,14 @@ val fn_list : unit -> fn list
     [fn_list] returns the list of all function symbols names
 *)
 
-val fn_from_string : string -> fn option
+val get_fn : string -> fn
 (**
-    [fn_from_string name] is [Some f] if [f] is registered with name [name],
-    [None] otherwise.
+    [fn_from_string name] is [f] if [f] is registered with name [name].
+
+    @raise [Not_found] if there is no such [f].
 *)
+
+val get_fn_opt : string -> fn option
 
 val fn_register : string -> fn
 (**
@@ -66,7 +69,9 @@ val var_equal : var -> var -> bool
 
 val var_list : unit -> var list
 
-val var_from_string : string -> var option
+val get_var : string -> var
+
+val get_var_opt : string -> var option
 
 val var_register : string -> var
 
@@ -92,10 +97,10 @@ val term_equal : term -> term -> bool
 -----------------------------------------------------------------------------*)
 
 type ('f, 'v) bruijn =
-    | Fun of 'f
-    | Var of 'v
-    | Lam of ('f, 'v) bruijn
-    | App of ('f, 'v) bruijn * ('f, 'v) bruijn
+    | NFun of 'f
+    | NVar of 'v
+    | NLam of ('f, 'v) bruijn
+    | NApp of ('f, 'v) bruijn * ('f, 'v) bruijn
 
 type nameless = (fn, int) bruijn
 

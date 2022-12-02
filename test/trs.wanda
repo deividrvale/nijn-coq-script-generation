@@ -1,0 +1,22 @@
+YES
+Signature: [
+    lim : [N -> O] --> O ;
+    plus : [O * O] --> O ;
+    s : [O] --> O ;
+    z : [] --> O ;
+    ~AP1 : [N -> O * N] --> O
+]
+
+Rules: [
+     plus(z, X) => X ;
+    plus(s(X), Y) => s(plus(X, Y)) ;
+    plus(lim(/\x.~AP1(F, x)), X) => lim(/\y.plus(~AP1(F, y), X)) ;
+    ~AP1(F, X) => F X
+]
+
+Removed: [
+  plus(z, X) => X ;
+  plus(s(X), Y) => s(plus(X, Y)) ;
+  plus(lim(/\x.~AP1(F, x)), X) => lim(/\y.plus(~AP1(F, y), X)) ;
+  ~AP1(F, X) => F X
+]

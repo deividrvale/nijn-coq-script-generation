@@ -20,7 +20,9 @@ module MakeSType = functor (B : Symb.NAME) -> struct
 
   let sort_list = B.symb_list
 
-  let get_sort = B.get_symb_opt
+  let get_sort = B.get_symb
+
+  let get_sort_opt = B.get_symb_opt
 
   let sort_register = B.register_name
 

@@ -5,7 +5,7 @@ open Coq.Proof_script
 
 open Wanda_parser
 
-(* Hardcoding map system for testing purposes *)
+(* Hardcoding map system for testing purposes
 (* Declaration of sort names *)
 let n_sort = sort_register "nat"
 let l_sort = sort_register "list"
@@ -112,7 +112,7 @@ let () =
   (* print_endline (poly_to_stm pol1); *)
   (* print_newline (); *)
   print_endline (itp_def_stm fake_itp "map_trs");
-  print_endline (sn_def_stm "map_trs")
+  print_endline (sn_def_stm "map_trs") *)
 
 (* let (test_term : term) =
 App( App( Fun cons, App(Var f, Var x)), App (App (Fun map, Var f), Var xs))
@@ -144,11 +144,46 @@ end *)
 
 open Wanda_parser
 
-let s = "MAYBE"
+let str =
+"
+Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1
+"
 
-let parsed_string =
-  Wanda_parser.parse_from_string Wanda_parser.p_answer Wanda_parser.wanda_lexer s
+let parsed_debug =
+  Wanda_parser.parse_from_string Wanda_parser.p_debug
+  Wanda_parser.wanda_lexer str
 
-let () =
-  print_endline "Testing Parsers Now ------------------------------------------";
-  print_endline (File.Wanda.answer_to_string parsed_string)
+(* let () = *)
+  (* print_endline "Testing Parsers Now ------------------------------------------"; *)
+  (* print_endline (File.Wanda.term_tree_to_string parsed_debug); *)
+  (* print_endline (tm_to_string (File.Wanda.tt_to_term parsed_debug)) *)
+  (* File.Wanda.register_signature parsed_debug *)
+  (* print_endline (fn_to_string (get_fn "nil")); *)
+  (* print_endline (ty_to_string (arity (get_fn "nil"))) *)
+
+(* let rules = File.Wanda.process_file parsed_debug
+(* Slowly Rebuilding the proof script from parsed data *)
+ let () =
+  (* Imports and Scope *)
+  print_endline "Slowly Rebuilding the proof script using parsed data ------------------------------------------";
+  print_newline ();
+  print_endline (import ["Nijn.Nijn"] );
+  print_endline (scope ["poly_scope"]);
+  print_newline ();
+  (* Sorts *)
+  print_endline (sort_def_stm (sort_list ()));
+  print_newline ();
+  print_endline dec_eq_ty;
+  print_newline ();
+  print_endline (sort_abrv (sort_list ()));
+  print_newline ();
+  (* Function Symbols *)
+  print_endline (fn_def_stm (fn_list ()));
+  print_newline ();
+  print_endline dec_eq_fn;
+  print_newline ();
+  print_endline (arity_def_stm (fn_list ()));
+  print_newline ();
+  print_endline (fn_abrv (fn_list ()));
+  print_endline (rules_def_stm rules);
+  print_endline (afs_df_stm rules "debug_parser") *)

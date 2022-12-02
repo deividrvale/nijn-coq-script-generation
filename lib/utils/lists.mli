@@ -26,6 +26,11 @@ val print_list : ('a -> string) -> 'a list -> unit
     utilizing [f].
 *)
 
+val to_string : ('a -> string) -> 'a list -> string
+(**
+    [to_string f xs] return a string representation of [xs] utilizing [f].
+*)
+
 val cons_uniq : ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list
 (**
     [cons_uniq f x xs] is like {!List:cons}

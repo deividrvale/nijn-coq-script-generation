@@ -7,7 +7,9 @@
 
 (* Definitions for textual structure *)
 let espace  = [' ' '\t']+
-let name    = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
+let name    = ['~']? ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
+let digit   = ['0'-'9']
+let number  = digit+
 let newLine = '\r' | '\n' | "\r\n"
 
 (*  *)
@@ -19,17 +21,25 @@ rule lexer = parse
   | ")"             { RPAREN }
   | "["             { LBRACE }
   | "]"             { RBRACE }
-  | ":"             { HAS_TYPE  }
+  | ":"             { COLON  }
+  | "/\\"           { TLAM }
+  | "."             { DOT }
+  | ","             { COMMA }
   | ";"             { SEP }
+  | "*"             { STAR }
+  | "Lam"           { PLAM }
   | "YES"           { YES }
   | "NO"            { NO }
   | "MAYBE"         { MAYBE }
-  | "signature"     { SIG_ID }
-  | "vars"          { VAR_ID }
-  | "rules"         { RULE_ID }
-  | "==>"              { RW_ARR }
-  | "-->"              { TY_ARR }
+  | "+"             { PLUS }
+  | "Signature"     { SIG_ID }
+  | "Rules"         { RULE_ID }
+  | "Removed"       { RMD_ID }
+  | "=>"              { RW_ARR }
+  | "->"              { TY_ARR }
+  | "-->"           { DC_ARR }
   | name               { STRING (Lexing.lexeme lexbuf) }
+  | number              { INT (int_of_string( Lexing.lexeme lexbuf )) }
   | _                  { raise (SyntaxError ("Unexpected character: " ^ Lexing.lexeme lexbuf))}
   | eof             { EOF }
 

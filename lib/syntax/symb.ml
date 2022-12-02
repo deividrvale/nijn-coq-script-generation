@@ -14,6 +14,8 @@ module type NAME = sig
 
   val symb_list : unit -> t list
 
+  val get_symb : string -> t
+
   val get_symb_opt : string -> t option
 
   val register_name : string -> t
@@ -23,6 +25,7 @@ module type NAME = sig
   val compare : t -> t -> int
 
   exception DuplicatedName of string
+  exception Name_Not_found of string
 end
 
 (*-----------------------------------------------------------------------------
@@ -30,6 +33,7 @@ end
 -----------------------------------------------------------------------------*)
 module IndexedName () : NAME = struct
   exception DuplicatedName of string
+  exception Name_Not_found of string
 
   type t = int
   (** names are integers *)
@@ -59,6 +63,13 @@ module IndexedName () : NAME = struct
         idx
       else
         idx_of_name name tl (idx + 1)
+
+  let get_symb (name : string) =
+    let idx = idx_of_name name !names 0 in
+    if idx >= !names_size then
+      raise (Name_Not_found ("Symbol: '" ^ name ^ "' is not registered."))
+    else
+      !names_size -1 - idx
 
   let get_symb_opt (name : string) =
     let idx = idx_of_name name !names 0 in

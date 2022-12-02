@@ -10,7 +10,8 @@ module FnMap = Map.Make (FSym)
 
 let fn_equal = FSym.equal
 let fn_list = FSym.symb_list
-let fn_from_string = FSym.get_symb_opt
+let get_fn = FSym.get_symb
+let get_fn_opt = FSym.get_symb_opt
 let fn_register = FSym.register_name
 let fn_to_string = FSym.to_string
 let fn_compare = FSym.compare
@@ -39,8 +40,8 @@ type var = VSym.t
 let var_equal = VSym.equal
 
 let var_list = VSym.symb_list
-
-let var_from_string = VSym.get_symb_opt
+let get_var = VSym.get_symb
+let get_var_opt = VSym.get_symb_opt
 
 let var_register = VSym.register_name
 
@@ -96,27 +97,27 @@ let tm_to_string = tm_to_string' true
     de Bruijn Terms
 -----------------------------------------------------------------------------*)
 type ('f, 'v) bruijn =
-    | Fun of 'f
-    | Var of 'v
-    | Lam of ('f, 'v) bruijn
-    | App of ('f, 'v) bruijn * ('f, 'v) bruijn
+    | NFun of 'f
+    | NVar of 'v
+    | NLam of ('f, 'v) bruijn
+    | NApp of ('f, 'v) bruijn * ('f, 'v) bruijn
 
 type nameless = (fn, int) bruijn
 
 let terms_to_bruijn t =
   let rec tm_brj_acc = (fun (tm : term) fvars ->
       match tm with
-      | Fun f -> Fun f
-      | Var v -> Var (Utils.Lists.index_of var_equal v fvars)
-      | Lam (v, t) -> Lam (tm_brj_acc t (v :: fvars))
-      | App (s, t) -> App ((tm_brj_acc s fvars), (tm_brj_acc t fvars))
+      | Fun f -> NFun f
+      | Var v -> NVar (Utils.Lists.index_of var_equal v fvars)
+      | Lam (v, t) -> NLam (tm_brj_acc t (v :: fvars))
+      | App (s, t) -> NApp ((tm_brj_acc s fvars), (tm_brj_acc t fvars))
     )
   in tm_brj_acc t (free_var t)
 
 let rec nameless_to_string' (is_root : bool) (t : nameless) =
   match t with
-  | Fun f -> fn_to_string f
-  | Var i -> " V " ^ (Int.to_string i)
+  | NFun f -> fn_to_string f
+  | NVar i -> " V " ^ (Int.to_string i)
   | e -> (
     if is_root then
       show_app e
@@ -124,21 +125,21 @@ let rec nameless_to_string' (is_root : bool) (t : nameless) =
       "(" ^ show_lam e ^ ")"
   )
 and show_app = function
-  | App (f, x) -> show_app f ^ " · " ^ (nameless_to_string' false x)
+  | NApp (f, x) -> show_app f ^ " · " ^ (nameless_to_string' false x)
   | e -> nameless_to_string' false e
 and show_lam = function
-  | Lam t -> "λ" ^ show_lam t
+  | NLam t -> "λ" ^ show_lam t
   | e -> show_app e
 
 let nameless_to_string = nameless_to_string' false
 
 let rec nameless_equal (s : nameless) (t : nameless) : bool =
   match (s,t) with
-  | (Var x, Var y) -> x == y
-  | (Fun x, Fun y) -> fn_equal x y
-  | (App (s,s'), App (t,t')) ->
+  | (NVar x, NVar y) -> x == y
+  | (NFun x, NFun y) -> fn_equal x y
+  | (NApp (s,s'), NApp (t,t')) ->
     (nameless_equal s t) && (nameless_equal s' t')
-  | (Lam s, Lam t) -> nameless_equal s t
+  | (NLam s, NLam t) -> nameless_equal s t
   | _ -> false
 
 let term_equal (s : term) (t : term) : bool =
