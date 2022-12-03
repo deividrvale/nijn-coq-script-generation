@@ -167,8 +167,8 @@ let poly_vars_to_stm ( f : poly_fun) =
     | hd :: tl ->
       let occurs = var_occurs p hd in
       (poly_var_to_stm hd occurs idx) ^ "\n" ^
-      poly_vars_to_stm' tl p (idx + 1)
-  ) in poly_vars_to_stm' vs pol 0
+      poly_vars_to_stm' tl p (idx - 1)
+  ) in poly_vars_to_stm' vs pol (List.length vs - 1)
 
 (* Helper function:
    prints the polynomial function Lam [x0, ..., xn] . <poly>. *)
