@@ -129,6 +129,8 @@ let register_signature (s : signature) =
   (* Register arities for each function symbol *)
   List.iter (fun (f, ty) -> Term.fn_register_ty (Term.get_fn f) (tydec_to_ty ty)) s
 
+(* Terms --------------------------------------------------------------------*)
+
 type term_tree =
   | S of string
   | Lam of string * term_tree
@@ -158,7 +160,10 @@ let tt_to_term (t : term_tree) =
       Term.App (tt_to_term' t, tt_to_term' t')
     | FApp (name, ts) ->
       let f = Term.get_fn name in
-      List.fold_left (fun x y -> Term.App(x,y)) (Term.Fun f) ( List.map tt_to_term' ts)
+      List.fold_left
+        (fun x y -> Term.App(x,y))
+        (Term.Fun f)
+        (List.map tt_to_term' ts)
   ) in tt_to_term' t
 
 let rec term_tree_to_string = function
@@ -170,63 +175,93 @@ let rec term_tree_to_string = function
   | App(s,t) ->
     "(" ^ (term_tree_to_string s) ^ " " ^ (term_tree_to_string t) ^ ")"
 
+(* Terms rewriting systesm --------------------------------------------------*)
+
 type trs = (term_tree * term_tree) list
 
 let get_trs (afs : trs) : Rule.trs =
   List.map (fun (x,y) -> Rule.rule_mk (tt_to_term x) (tt_to_term y)) afs
 
-type poly_tree =
-  | Num of int
-  | FOName of string
-  | App of string * poly_tree
-  | Add of poly_tree * poly_tree
-  | Mul of poly_tree * poly_tree
+(* Polynomials --------------------------------------------------------------*)
 
-(* let rec poly_tree_to_poly = function
-  | Num i -> Poly.Num i
-  | FOName x ->
-    if Option.is_some (Poly.PolV.get_symb_opt x) then
-      Poly.Var (Poly.FOVar (Poly.PolV.get_symb x))
-    else
-      let name = Poly.PolV.register_name x in
-      Poly.Var (Poly.FOVar (name))
-  | App (x, p) ->
-    if Option.is_some (Poly.PolV.get_symb_opt x) then
-      Poly.App (Poly.HOVar (Poly.PolV.get_symb x), poly_tree_to_poly p)
-    else
-      let name = Poly.PolV.register_name x in
-      Poly.App (Poly.HOVar name, poly_tree_to_poly p)
-  | Add (p, p') ->
-    Poly.Add (poly_tree_to_poly p, poly_tree_to_poly p')
-  | Mul (p,p') ->
-    Poly.Mul (poly_tree_to_poly p, poly_tree_to_poly p') *)
+type poly_int =
+  | CInt of string * Poly.poly
+  | LInt of string * Poly.poly_fun
 
+let c_interpret = fun x y -> CInt (x,y)
+let l_interpret = fun x y -> LInt (x,y)
 
-type fun_poly =
-  | FPoly of string list * poly_tree
+let proof_int = function
+  | CInt (f, p) ->
+    (f, Poly.poly_fun_mk [] p)
+  | LInt (f, p) -> (f, p)
 
-(* let to_fn_poly = function *)
-  (* | FPoly (ns, p) ->d *)
-    (* refactor poly so there is no difference between fo and ho vars *)
+(* File ---------------------------------------------------------------------*)
 
-
-
-
-type file = {
+type parsed_file = {
   ans : answer;
   sign : signature;
   afs : trs;
+  itp : (string * Poly.poly_fun) list;
   rmd : trs
 }
 
-let new_file ans arity afs rmd = {
+let new_file ans arity afs itp rmd = {
   ans = ans;
   sign = arity;
   afs = afs;
+  itp = itp;
   rmd = rmd
+}
+
+(*-----------------------------------------------------------------------------
+ Compilation of the internal file representation to proof script
+-----------------------------------------------------------------------------*)
+(* When we process the parsed file, names for the syntax signature are registered
+  in their respective states.
+  So, the only data needed to compile the TRS to the coq script is the rules and
+  the polynomial interpretation. *)
+type int_data = {
+  trs : Rule.trs;
+  poly_int : (Term.fn * Poly.poly_fun) list
 }
 
 let process_file file =
   (* first, we register the signature *)
   let _ = register_signature file.sign in
-  get_trs file.afs
+  { trs = get_trs file.afs;
+    poly_int =
+    (List.map (fun (f,p) ->
+      (let _ = Term.fn_register f in (); Term.get_fn f, p)) file.itp )
+  }
+
+let gen_proof_string (data : int_data) =
+  let open Coq.Proof_script in
+  let open Term in
+  let open Ty.SType in
+  String.concat "\n" [
+    (* Imports and Scope *)
+    import ["Nijn.Nijn"];
+    scope ["poly_scope"];
+    "\n";
+    (* Sorts *)
+    sort_def_stm (sort_list ());
+    dec_eq_ty;
+    "\n";
+    sort_abrv (sort_list ());
+    "\n";
+    (* Function Symbols *)
+    fn_def_stm (fn_list ());
+    dec_eq_fn;
+    "\n";
+    arity_def_stm (fn_list ());
+    fn_abrv (fn_list ());
+    "\n";
+    (* Rules and Rewriting *)
+    rules_def_stm data.trs;
+    afs_df_stm data.trs "trs";
+    "\n";
+    (* Interpretation and Strong Normalization *)
+    itp_def_stm data.poly_int "trs";
+    sn_def_stm "trs"
+  ]

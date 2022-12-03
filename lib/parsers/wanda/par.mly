@@ -1,5 +1,6 @@
 %{
   open File.Wanda
+  open Syntax.Poly
 %}
 
 // Tokens
@@ -18,11 +19,13 @@
 %token RBRACE
 %token SIG_ID
 %token RMD_ID
+%token INT_ID
 %token COLON
 %token COMMA
 %token RULE_ID
 %token TLAM
 %token DOT
+%token EQ
 %token PLAM
 
 // %token J
@@ -33,7 +36,7 @@
 %token EOF
 
 // Start symbol
-%start answer debug_parser
+%start answer signature trs interpretation file debug_parser
 
 // Associativity and precedence level for the tokens.
 //Important: the precedences must be listed from low to high.
@@ -41,14 +44,18 @@
 %right TY_ARR
 %right PLUS
 %left STAR
+%nonassoc SEP
 
 // Types of each declaration
 %type < answer > answer
 %type < tydec > ty_dec
 %type < string * tydec > fn_dec
 %type < signature > signature
+%type < (term_tree * term_tree) list > trs
+%type < (string * poly_fun) list > interpretation
 // debug parser, the type is abstract
 %type < 'a > debug_parser
+%type < parsed_file > file
 
 %%
 
@@ -104,20 +111,36 @@ trs:
   | RULE_ID COLON LBRACE rs = separated_nonempty_list(SEP, rule) RBRACE { rs }
 
 removed:
-  | RMD_ID COLON LBRACE rs = separated_list(SEP, rule) RBRACE { rs }
-
-file:
-  | answer signature trs removed { new_file $1 $2 $3 $4 }
+  | RMD_ID COLON LBRACE rs = separated_list(SEP, rule) RBRACE
+  { rs }
 
 poly:
-  | INT     { Num $1 }
-  | STRING  { FOName $1 }
-  | poly PLUS poly  { Add ($1, $3) }
-  | poly STAR poly { Mul ($1, $3) }
-  | STRING LPAREN poly RPAREN { App ($1, $3) }
+  | INT     { num $1 }
+  | STRING  { var (PolV.register_name $1) }
+  | poly PLUS poly  { add $1 $3 }
+  | poly STAR poly { mul $1 $3 }
+  | STRING LPAREN poly RPAREN
+  { app (var (PolV.register_name $1 )) $3 }
 
 fun_poly:
-  | PLAM LBRACE xs = separated_nonempty_list(SEP, STRING) RBRACE DOT p = poly { FPoly (xs, p) }
+  | PLAM LBRACE xs = separated_nonempty_list(SEP, STRING) RBRACE DOT p = poly
+  { let names = List.map (fun s -> PolV.register_name s ) xs in
+    poly_fun_mk names p
+  }
+
+fn_int:
+  | STRING LPAREN f = STRING RPAREN EQ p = fun_poly
+  { l_interpret f p}
+  | STRING LPAREN f = STRING RPAREN EQ p = poly
+  { c_interpret f p }
+
+interpretation:
+  | INT_ID COLON LBRACE is = separated_nonempty_list(SEP, fn_int) RBRACE
+  { List.map proof_int is }
+
+file:
+  | answer signature trs interpretation removed
+  { new_file $1 $2 $3 $4 $5 }
 
 debug_parser:
-    | fun_poly EOF { $1 }
+    | file EOF { $1 }

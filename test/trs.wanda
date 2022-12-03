@@ -1,22 +1,37 @@
 YES
-Signature: [
-    lim : [N -> O] --> O ;
-    plus : [O * O] --> O ;
-    s : [O] --> O ;
-    z : [] --> O ;
-    ~AP1 : [N -> O * N] --> O
-]
+  Signature: [
 
-Rules: [
-     plus(z, X) => X ;
-    plus(s(X), Y) => s(plus(X, Y)) ;
-    plus(lim(/\x.~AP1(F, x)), X) => lim(/\y.plus(~AP1(F, y), X)) ;
-    ~AP1(F, X) => F X
-]
+    z : [] --> a ;
+    add : [] --> a -> a -> a ;
+    curry : [a -> a -> a] --> a -> a -> a ;
+    plus : [] --> a -> a -> a ;
+    s : [a] --> a
 
+  ]
+
+  Rules: [
+
+    plus z x => x ;
+    plus s(x) y => s(plus x y) ;
+    curry(f) x y => f x y ;
+    add => curry(plus)
+
+  ]
+
+  Interpretation: [
+
+    J(0) = 3 ;
+    J(add) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ;
+    J(curry) = Lam[G0;y1;y2].1 + G0(0,0) + G0(y1,y1) + G0(y1,y2) ;
+    J(plus) = Lam[y0;y1].y0 ;
+    J(s) = Lam[y0].3
+
+  ]
 Removed: [
-  plus(z, X) => X ;
-  plus(s(X), Y) => s(plus(X, Y)) ;
-  plus(lim(/\x.~AP1(F, x)), X) => lim(/\y.plus(~AP1(F, y), X)) ;
-  ~AP1(F, X) => F X
+
+  plus z X => X ;
+  plus s(X) Y => s(plus X Y) ;
+  curry(F) X Y => F X Y ;
+  add => curry(plus)
+
 ]

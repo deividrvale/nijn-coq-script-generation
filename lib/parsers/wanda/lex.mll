@@ -27,6 +27,7 @@ rule lexer = parse
   | ","             { COMMA }
   | ";"             { SEP }
   | "*"             { STAR }
+  | "="             { EQ }
   | "Lam"           { PLAM }
   | "YES"           { YES }
   | "NO"            { NO }
@@ -35,6 +36,7 @@ rule lexer = parse
   | "Signature"     { SIG_ID }
   | "Rules"         { RULE_ID }
   | "Removed"       { RMD_ID }
+  | "Interpretation" { INT_ID }
   | "=>"              { RW_ARR }
   | "->"              { TY_ARR }
   | "-->"           { DC_ARR }

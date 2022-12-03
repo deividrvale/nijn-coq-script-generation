@@ -65,15 +65,15 @@ let arity_def_stm fn_list =
     )
   in
   let def_body =
-    match_cmd "f" match_body
-  in cmd_def Definition "map_ar f" def_body
+    match_cmd "fn_symbols" match_body
+  in cmd_def Definition "fn_arity fn_symbols" def_body
 
 let rec fn_abrv = function
   | [] -> String.empty
   | hd :: tl ->
     let fn_name = fn_to_string hd in
       (cmd_def Definition
-      (String.concat " " [fn_name;"{C}";":";"tm map_ar C _"])
+      (String.concat " " [fn_name;"{C}";":";"tm fn_arity C _"])
       (String.concat " " ["BaseTm";(fn_to_ctrs hd)]))
       ^ "\n" ^ fn_abrv tl
 
@@ -125,7 +125,7 @@ let afs_df_stm (afs : Syntax.Rule.trs) (name : string) =
   ) in
   cmd_def Definition name
   ("  make_afs\n" ^
-  "    map_ar \n" ^
+  "    fn_arity \n" ^
   "    (" ^ rules_label_list afs ^ ")")
 
 (* Interpretation -----------------------------------------------------------*)
@@ -188,9 +188,9 @@ let poly_match_body (itp : (fn * poly_fun) list) =
 let itp_def_stm (itp : (fn * poly_fun) list) (name : string) =
   let match_body = poly_match_body itp in
   let def_body =
-  match_cmd "f" match_body in
+  match_cmd "fn_symbols" match_body in
   cmd_def Definition
-  ("map_fun_poly f : poly ∙ (arity " ^ name ^ " f)") def_body
+  ("map_fun_poly fn_symbols : poly ∙ (arity " ^ name ^ " fn_symbols)") def_body
 
 let sn_def_stm (name : string) =
   let def_proof = cmd_proof Qed "solve_poly_SN map_fun_poly."

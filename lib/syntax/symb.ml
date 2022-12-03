@@ -87,11 +87,14 @@ module IndexedName () : NAME = struct
         n
       )
     | Some _ ->
-      raise (DuplicatedName (
+      (* Now if a name is already registered we return it and don't
+         change the internal state of the module. *)
+      get_symb new_name
+      (* raise (DuplicatedName (
         String.concat "" [
           "Cannot register the name: ";
           "'"; new_name; "'";
-          " it is already in the stack!"]))
+          " it is already in the stack!"])) *)
   let to_string sym = List.nth !names (!names_size -1 -sym)
 end
 
