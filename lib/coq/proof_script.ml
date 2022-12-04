@@ -179,9 +179,7 @@ let poly_vars_to_stm ( f : poly_fun) =
 let poly_to_stm poly_fun =
   let pol = get_poly poly_fun in
   (poly_vars_to_stm poly_fun) ^
-  "(" ^
-    "P_base (" ^ (to_string pol) ^ ")" ^
-  ")"
+  "(" ^ "to_Poly (" ^ (to_string pol) ^ ")" ^ ")"
 
 (*  *)
 let poly_match_body (itp : (fn * poly_fun) list) =
