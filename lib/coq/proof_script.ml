@@ -78,22 +78,24 @@ let rec fn_abrv = function
       ^ "\n" ^ fn_abrv tl
 
 (* Rules --------------------------------------------------------------------*)
+(* Helper function: generate a coq rule context of size n. *)
 let gen_ctx n =
   let ctx_dash = List.init n (fun _ -> "_") in
   "(" ^ (String.concat " ,, " (ctx_dash @ ["∙"])) ^
   ")" ^ " _" ^ "\n"
 
-let rule_tm_to_string (f : Syntax.Rule.rule -> term) r =
-  nameless_to_string (terms_to_bruijn (f r))
-
+(*  *)
 let rules_def_stm (afs : Syntax.Rule.trs) =
   let open Syntax.Rule in
   let rec rules_def_stm' = (fun afs i ->
     match afs with
     | [] -> String.empty
     | hd :: tl ->
-      (* determine the number of free variables in the lhs *)
-      let n = List.length (free_var (lhs hd)) in
+      (* The naming context for the rule is the free variables of the lhs. *)
+      let fvars_ctx = (free_var (lhs hd)) in
+      (* We then determine the size of such context, in order to generate the
+         coq implicit context of correct size. *)
+      let n = List.length fvars_ctx in
       (* generate the string for context *)
       let ctx = gen_ctx n in
       let def_body =
@@ -105,9 +107,11 @@ let rules_def_stm (afs : Syntax.Rule.trs) =
         (* context *)
         "    " ^ ctx ^
         (* lhs *)
-        "    " ^ rule_tm_to_string lhs hd ^ "\n" ^
+        "    " ^
+        (nameless_to_string (terms_to_bruijn_ctx fvars_ctx (lhs hd))) ^ "\n" ^
         (* rhs *)
-        "    " ^ rule_tm_to_string rhs hd
+        "    " ^
+        (nameless_to_string (terms_to_bruijn_ctx fvars_ctx (rhs hd)))
       in
       (cmd_stm Progam ~keyword_list:[Definition] def_body) ^ "\n" ^
       (rules_def_stm' tl (i + 1))

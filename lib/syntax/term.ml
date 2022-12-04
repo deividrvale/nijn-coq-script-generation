@@ -104,15 +104,21 @@ type ('f, 'v) bruijn =
 
 type nameless = (fn, int) bruijn
 
-let terms_to_bruijn t =
-  let rec tm_brj_acc = (fun (tm : term) fvars ->
-      match tm with
-      | Fun f -> NFun f
-      | Var v -> NVar (Utils.Lists.index_of var_equal v fvars)
-      | Lam (v, t) -> NLam (tm_brj_acc t (v :: fvars))
-      | App (s, t) -> NApp ((tm_brj_acc s fvars), (tm_brj_acc t fvars))
+let rec terms_to_bruijn_ctx ctx (tm : term) : nameless =
+  match tm with
+  | Fun f -> NFun f
+  | Var v ->
+    NVar (Utils.Lists.index_of var_equal v ctx)
+  | Lam (v, t) ->
+    NLam (terms_to_bruijn_ctx (v :: ctx) t)
+  | App (s, t) ->
+    NApp (
+      (terms_to_bruijn_ctx ctx s),
+      (terms_to_bruijn_ctx ctx t)
     )
-  in tm_brj_acc t (free_var t)
+
+let terms_to_bruijn t =
+  terms_to_bruijn_ctx (free_var t) t
 
 let rec nameless_to_string' (is_root : bool) (t : nameless) =
   match t with

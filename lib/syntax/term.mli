@@ -106,6 +106,8 @@ type nameless = (fn, int) bruijn
 
 val terms_to_bruijn : term -> nameless
 
+val terms_to_bruijn_ctx : var list -> term -> nameless
+
 val nameless_to_string : nameless -> string
 
 val nameless_equal : nameless -> nameless -> bool
