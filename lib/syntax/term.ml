@@ -134,7 +134,7 @@ and show_app = function
   | NApp (f, x) -> show_app f ^ " · " ^ (nameless_to_string' false x)
   | e -> nameless_to_string' false e
 and show_lam = function
-  | NLam t -> "λ" ^ show_lam t
+  | NLam t -> "λ " ^ show_lam t
   | e -> show_app e
 
 let nameless_to_string = nameless_to_string' false

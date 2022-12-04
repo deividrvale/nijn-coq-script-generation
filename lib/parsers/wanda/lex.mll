@@ -7,7 +7,7 @@
 
 (* Definitions for textual structure *)
 let espace  = [' ' '\t']+
-let name    = ['~']? ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
+let name    = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
 let digit   = ['0'-'9']
 let number  = digit+
 let newLine = '\r' | '\n' | "\r\n"
