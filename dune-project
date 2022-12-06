@@ -2,7 +2,7 @@
 
 (using menhir 2.1)
 
-(name nijn)
+(name onijn)
 
 (version 0.1.0)
 
@@ -20,7 +20,7 @@
 (documentation https://url/to/documentation)
 
 (package
- (name nijn)
+ (name onijn)
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends ocaml dune)

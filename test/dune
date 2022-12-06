@@ -1,3 +1,3 @@
 (test
- (name nijn)
+ (name onijn)
  (libraries file syntax coq wanda_parser))

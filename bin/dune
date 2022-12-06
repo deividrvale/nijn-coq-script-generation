@@ -1,4 +1,4 @@
 (executable
  (public_name onijn)
- (name main)
+ (name onijn)
  (libraries nijn syntax utils wanda_parser))

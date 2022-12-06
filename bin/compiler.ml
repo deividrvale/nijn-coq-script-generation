@@ -1,4 +1,4 @@
-exception InvalidConfig of string
+exception Invalid_config of string
 
 type format =
   | NONE
@@ -40,7 +40,7 @@ let config = {
 
 let config_to_string cf =
   String.concat " " [
-    "Invalid Configuration:";
+    "Input format:";
     format_to_string cf.format;
     tt_to_string cf.tt
   ]
@@ -69,4 +69,4 @@ let compile str =
   if format_eq config.format WANDA && tt_eq config.tt POLY then
     compile_wanda_no_rr str
   else
-    raise (InvalidConfig (config_to_string config))
+    raise (Invalid_config (config_to_string config))

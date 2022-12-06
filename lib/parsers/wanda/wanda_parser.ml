@@ -8,8 +8,6 @@ module LexPar : PARSER with type t = Par.token = struct
 end
 
 module P = ParseWithErrors (LexPar)
-
-open LexPar
 include P
 
 let wanda_lexer : lexer = Lex.lexer
