@@ -9,7 +9,7 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github deividrvale/nijn-coq-script-generation))
 
 (authors "Deivid Vale" "Niels van der Weide")
 

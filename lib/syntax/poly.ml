@@ -107,5 +107,9 @@ let rec to_string p =
   | Mul (p, q) ->
     to_string p ^ " * " ^ to_string q
   | App (p, q) ->
-    to_string p ^
-    " ·P " ^ "(" ^ to_string q ^ ")"
+    "(" ^
+      to_string p ^ " ·P " ^ "(" ^ to_string q ^ ")" ^
+    ")"
+
+let apply_poly_list poly poly_list =
+  List.fold_left (fun x y -> App(x,y)) poly poly_list

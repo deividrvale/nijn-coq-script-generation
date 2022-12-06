@@ -115,12 +115,23 @@ removed:
   { rs }
 
 poly:
+  | non_poly_app        { $1 }
+  | poly_app            { $1 }
+//   | STRING LPAREN poly RPAREN
+//   { app (var (PolV.register_name $1)) $3 }
+
+poly_app:
+  | poly_app non_poly_app { app $1 $2 }
+  | non_poly_app non_poly_app { app $1 $2}
+
+non_poly_app:
   | INT     { num $1 }
-  | STRING  { var (PolV.register_name $1) }
+  | STRING { var (PolV.register_name $1) }
+  | LPAREN poly RPAREN { $2 }
   | poly PLUS poly  { add $1 $3 }
   | poly STAR poly { mul $1 $3 }
-  | STRING LPAREN poly RPAREN
-  { app (var (PolV.register_name $1 )) $3 }
+  | STRING LPAREN args = separated_nonempty_list(COMMA, poly) RPAREN
+    { apply_poly_list (var (PolV.register_name $1)) args }
 
 fun_poly:
   | PLAM LBRACE xs = separated_nonempty_list(SEP, STRING) RBRACE DOT p = poly

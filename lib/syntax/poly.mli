@@ -26,6 +26,8 @@ val to_string : poly -> string
 
 val var_occurs : poly -> name -> bool
 
+val apply_poly_list : poly -> poly list -> poly
+
 type poly_fun
 
 val poly_fun_mk : name list -> poly -> poly_fun
