@@ -7,7 +7,6 @@
 -----------------------------------------------------------------------------*)
 module type NAME = sig
   type t
-  (** [t] is the type for inner representation of names *)
 
   val equal : t -> t -> bool
   (** [equal t1 t2] is [true] iff [t1 == t2] *)
@@ -24,7 +23,6 @@ module type NAME = sig
 
   val compare : t -> t -> int
 
-  exception DuplicatedName of string
   exception Name_Not_found of string
 end
 
@@ -32,11 +30,10 @@ end
   Names as indexed integers
 -----------------------------------------------------------------------------*)
 module IndexedName () : NAME = struct
-  exception DuplicatedName of string
   exception Name_Not_found of string
 
   type t = int
-  (** names are integers *)
+  (* names are integers *)
 
   let compare = Int.compare
 
