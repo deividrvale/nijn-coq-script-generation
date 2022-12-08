@@ -1,3 +1,4 @@
 (library
  (name syntax)
+ (public_name onijn.syntax)
  (libraries utils))
