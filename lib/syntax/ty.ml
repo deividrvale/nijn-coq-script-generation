@@ -1,11 +1,3 @@
-(*-----------------------------------------------------------------------------
-  Types
------------------------------------------------------------------------------*)
-module type TYPE = sig
-  type 'a t =
-    | Base of 'a
-    | Arrow of 'a t * 'a t
-end
 
 module MakeSType = functor (B : Symb.NAME) -> struct
   (* A sort type is a name from B *)
