@@ -1,4 +1,7 @@
+(** This module provides functionality to represent rewriting rules. *)
+
 open Term
+(** *)
 
 exception Invalid_rule of string
 (** Exception raised when trying to create an invalid rewrite rule. *)
@@ -7,7 +10,7 @@ type rule
 (** Abstract type for rule. *)
 
 type trs = rule list
-(** A TRS is a list of {!type:rules} *)
+(** A TRS is a list of {!type:rule} *)
 
 val rule_mk : term -> term -> rule
 (**
