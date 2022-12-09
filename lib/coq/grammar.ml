@@ -49,7 +49,7 @@ let cmd_def keyword ident_dec def_body =
   ] ^
   def_body ^ "."
 
-let cmd_stm ?keyword_list keyword  stm_body =
+let cmd_stm ?keyword_list keyword stm_body =
   let stm = (fun extra_kw ->
     let header =
       String.concat " " [keyword_to_string keyword; extra_kw] ^ " " in
