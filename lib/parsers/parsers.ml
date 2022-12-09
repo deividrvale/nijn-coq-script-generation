@@ -3,10 +3,7 @@
 ---------------------------------------------------------------------------- *)
 module type PARSER = sig
   type t
-  (** Type for tokens *)
-
   exception SyntaxError of string
-
   exception Error
 end
 
