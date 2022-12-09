@@ -1,3 +1,4 @@
 (library
  (name coq)
+ (public_name onijn.coq)
  (libraries syntax))
