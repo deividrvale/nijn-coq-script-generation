@@ -33,7 +33,7 @@ val to_string : ('a -> string) -> 'a list -> string
 
 val cons_uniq : ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list
 (**
-    [cons_uniq f x xs] is like {!List:cons}
+    [cons_uniq f x xs] is like [List.cons]
     but [x] is added to the list iff it is not a member of [xs],
     [f] is used as equality operator.
 *)

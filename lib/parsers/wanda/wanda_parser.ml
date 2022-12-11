@@ -1,5 +1,5 @@
 open File.Wanda
-open Parsers
+open Parser
 
 module LexPar : PARSER with type t = Par.token = struct
   type t = Par.token

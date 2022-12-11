@@ -1,6 +1,6 @@
 (library
  (name wanda_parser)
- (libraries syntax file parsers))
+ (libraries syntax file parser))
 
 (menhir
  (modules par))

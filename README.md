@@ -17,6 +17,7 @@ this is the higher-order interpretation method described in
 
 Building the onijn package should be pretty easy if you have [opam](https://opam.ocaml.org/doc/Install.html) installed.
 
+- OCaml v4.14.0 or higher.
 - Install opam v2.1.3 or higher.
   - See [opam](https://opam.ocaml.org/doc/Install.html) for installation instructions.
 - Install dune v3.5.0 or higher.
