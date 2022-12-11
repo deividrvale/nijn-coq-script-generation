@@ -1,4 +1,6 @@
-let usage_msg = "onijn <file> -o <output file>"
+let usage_msg = "onijn <file> -o <output file> \n
+Note: this version only supports Wanda file format.
+Hence, no further configuration options are available."
 
 let input_files : (string list) ref = ref []
 
