@@ -23,7 +23,9 @@
  (name onijn)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune)
+ (depends
+  (ocaml (>= 4.14.0))
+  (dune (>= 3.6.1)))
  (tags
   (topics "to describe" your project)))
 
