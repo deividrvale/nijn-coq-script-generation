@@ -4,7 +4,7 @@
 
 (name onijn)
 
-(version 0.1.0)
+(version 0.2.0)
 
 (generate_opam_files true)
 
@@ -17,16 +17,16 @@
 
 (license MIT)
 
-(documentation https://url/to/documentation)
+(documentation https://deividrvale.github.io/nijn-coq-script-generation/onijn/index.html)
 
 (package
  (name onijn)
- (synopsis "A short synopsis")
- (description "A longer description")
+ (synopsis "Coq script genaration from proof trace.")
+ (description "OCaml module of Nijn to generate coq scripts for checking termination proofs of higher-order rewriting systems.")
  (depends
   (ocaml (>= 4.14.0))
   (dune (>= 3.6.1)))
  (tags
-  (topics "to describe" your project)))
+  (coq "termination checking" "proof generation")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
