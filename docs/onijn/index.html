@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>index (onijn.index)</title><link rel="stylesheet" href="../odoc.css"/><meta charset="utf-8"/><meta name="generator" content="odoc 2.2.0"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body class="odoc"><nav class="odoc-nav"><a href="../index.html">Up</a> – onijn</nav><header class="odoc-preamble"><h1 id="onijn---coq-proof-script-generation"><a href="#onijn---coq-proof-script-generation" class="anchor"></a>ONijn - Coq Proof Script Generation</h1><p>ONijn is an OCaml module of <a href="https://github.com/nmvdw/Nijn">Nijn</a>. It is intended to be used as a tool to generate Coq termination certification scripts from the output of termination tools.</p></header><nav class="odoc-toc"><ul><li><a href="#quickstart">Quickstart</a></li><li><a href="#public-api">Public API</a></li><li><a href="#input-file-format">Input File Format</a><ul><li><a href="#grammar-for-signature-and-rules">Grammar for Signature and Rules</a></li><li><a href="#grammar-for-polynomial-interpretations">Grammar for Polynomial Interpretations</a></li><li><a href="#removed-rules">Removed Rules</a></li><li><a href="#a-complete-file-example">A Complete File Example</a></li></ul></li></ul></nav><div class="odoc-content"><h2 id="quickstart"><a href="#quickstart" class="anchor"></a>Quickstart</h2><h2 id="public-api"><a href="#public-api" class="anchor"></a>Public API</h2><p>The public API consists of three modules: <a href="Syntax/index.html"><code>Syntax</code></a>, <a href="Coq/index.html"><code>Coq</code></a>, and <a href="Parser/index.html"><code>Parser</code></a>.</p><ul><li><a href="Syntax/index.html"><code>Syntax</code></a> Provides submodules for syntactic constructions. It contains representations for Types, Terms, Polynomials, and rewriting rules.</li></ul><ul><li><a href="Coq/index.html"><code>Coq</code></a> Provides interfacing to generate strings that are valid coq constructions. For more details, check the <a href="Coq/Grammar/index.html"><code>Coq.Grammar</code></a> and <a href="Coq/Proof_script/index.html"><code>Coq.Proof_script</code></a> modules.</li></ul><ul><li><a href="Parser/index.html"><code>Parser</code></a> Provides abstract interfacing for creating parsers of file formats accepted by <b>ONijn</b>.</li></ul><h2 id="input-file-format"><a href="#input-file-format" class="anchor"></a>Input File Format</h2><p>In order to certify terminaion of a rewriting system, one must first represent the certificate (stating the termination property) in a way that <b>onijn</b> understands it.</p><p>The rewriting formalism of accepted by <b>onijn</b> is AFS (Algebraic Functional Systems).</p><h3 id="grammar-for-signature-and-rules"><a href="#grammar-for-signature-and-rules" class="anchor"></a>Grammar for Signature and Rules</h3><pre class="language-ocaml"><code>answer := YES | NO | MAYBE
+sort, fn, var := ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
+
+type := sort | type -&gt; type
+type_dec := [] --&gt; type | [type * ... * type] --&gt; type
+
+term := var | fn | term term | fn(term, ..., term) | /\var.term
+
+rewrite_rule := term =&gt; term</code></pre><p>Where <code>answer</code> represents the termination status given by a termination tool. In the construct for <code>sort</code>, <code>fn</code>, and <code>var</code>, the regex expression <code>['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*</code> stating the string format accepted as names for sorts, function symbols, and variables, respectively.</p><p>In algebraic functional systems, type declarations and types are not the same. The <code>type</code> construct defines the usual simple types, meanwhile the <code>type_dec</code> construct defines type declarations. Type declarations are used to anotate function symbols in the input signature. Intuitively, a type declaration is a list of input types separated by <code>*</code>, i.e., a list <code>[&lt;type_1&gt; * ... * &lt;type_n&gt;]</code>, and an output type.</p><p>For instance, to represent that a symbol <code>zero</code> is of type <code>nat</code>, we write: <code>zero : [] --&gt; nat</code>. Notice that the input type list is empty, which is in line with the intended interpretation of <code>zero : nat</code>, as <code>zero</code> would be a symbol that does not receive any arguments. Take for instance <code>map : (a -&gt; a) -&gt; list -&gt; list</code>, which is the type of a monomorphic <code>map</code> function over elements of type <code>a</code>. It's type declaration can be written as <code>map : [(a -&gt; a) * list] --&gt; list</code>.</p><p>We can already represent signature and rewriting systems. Let us take the <code>map</code> TRS as exemple.</p><pre class="language-ocaml"><code>map(F, nil) =&gt; nil
+map(F, hd :: tl) =&gt; F(hd) :: map(F, tl)</code></pre><p>In <b>onijn</b> format this system is represented as:</p><pre class="language-ocaml"><code>Signature: [
+  cons : [a * list] --&gt; list;
+  map : [list * a -&gt; a] --&gt; list;
+  nil : [] --&gt; list
+]
+
+Rules: [
+  map(nil, f) =&gt; nil ;
+  map(cons(x, y), f) =&gt; cons(f x, map(y, f))
+]</code></pre><h3 id="grammar-for-polynomial-interpretations"><a href="#grammar-for-polynomial-interpretations" class="anchor"></a>Grammar for Polynomial Interpretations</h3><p>We represent polynomials with the grammar below:</p><pre class="language-ocaml"><code>var := ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
+poly := n | var | var(poly) | poly + poly | poly * poly
+poly_fun := Lam[var_1; ...; var_n] . poly
+poly_int := J(fn) = poly_fun</code></pre><p>Continuing with the map example, we represet an interpretation for it in <b>onijn</b> as follows:</p><pre class="language-ocaml"><code>Interpretation: [
+  J(cons) = Lam[y0;y1].3 + 2*y1;
+  J(map) = Lam[y0;G1].3*y0 + 3*y0*G1(y0);
+  J(nil) = 3
+]</code></pre><h3 id="removed-rules"><a href="#removed-rules" class="anchor"></a>Removed Rules</h3><p>An <b>onijn</b> file must end with a list of rules that can be oriented with the given interpretation.</p><pre class="language-ocaml"><code>Removed: [
+  map(nil, F) =&gt; nil ;
+  map(cons(X, Y), F) =&gt; cons(F X, map(Y, F))
+]</code></pre><h3 id="a-complete-file-example"><a href="#a-complete-file-example" class="anchor"></a>A Complete File Example</h3><p>Putting everything together we get a file <code>map_trs.onijn</code> as follows:</p><pre class="language-ocaml"><code>(** This is a comment. It will be ignored by onijn. **)
+YES
+
+Signature: [
+  cons : [a * list] --&gt; list      ;
+  map  : [list * a -&gt; a] --&gt; list ;
+  nil  : [] --&gt; list
+]
+
+Rules: [
+  map(nil, f)        =&gt; nil ;
+  map(cons(x, y), f) =&gt; cons(f x, map(y, f))
+]
+
+Interpretation: [
+  J(cons) = Lam[y0;y1].3 + 2*y1;
+  J(map)  = Lam[y0;G1].3*y0 + 3*y0*G1(y0);
+  J(nil)  = 3
+]
+
+Removed: [
+  map(nil, F) =&gt; nil ;
+  map(cons(X, Y), F) =&gt; cons(F X, map(Y, F))
+]</code></pre></div></body></html>
