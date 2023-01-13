@@ -1,0 +1,42 @@
+YES
+  Signature: [
+
+    f : [] --> a -> b -> c ; 
+    f1 : [a] --> b -> c ; 
+    f2 : [a * b] --> c 
+
+  ]
+
+  Rules: [
+
+    f1(x) => f x ; 
+    f2(x, y) => f1(x) y 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(f) = Lam[y0;y1].0 ; 
+    J(f1) = Lam[y0;y1].1 ; 
+    J(f2) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 
+
+  ]
+
+(**
+
+  [[f1(_x0)]] = Lam[y0].1 + x0 > Lam[y0].x0 = [[f(_x0)]] 
+  [[f2(_x0, _x1)]] = 3 + 3*x0*x1 + 4*x0 + 4*x1 > 1 + x0 + x1 = [[f1(_x0) _x1]] 
+
+**)
+
+Removed: [
+
+  f1(X) => f(X) ; 
+  f2(X, Y) => f1(X) Y 
+
+]
+

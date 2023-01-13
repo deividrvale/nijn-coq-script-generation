@@ -1,0 +1,80 @@
+YES
+  Signature: [
+
+    add : [nat] --> nat -> nat ; 
+    eq : [nat] --> nat -> bool ; 
+    err : [] --> nat ; 
+    false : [] --> bool ; 
+    id : [] --> nat -> nat ; 
+    nul : [] --> nat -> bool ; 
+    pred : [nat] --> nat ; 
+    s : [nat] --> nat ; 
+    true : [] --> bool ; 
+    zero : [] --> nat 
+
+  ]
+
+  Rules: [
+
+    nul zero => true ; 
+    nul s(x) => false ; 
+    nul err => false ; 
+    pred(zero) => err ; 
+    pred(s(x)) => x ; 
+    id x => x ; 
+    eq(zero) => nul ; 
+    eq(s(x)) => /\y.eq(x) pred(y) ; 
+    add(zero) => id ; 
+    add(s(x)) => /\y.add(x) s(y) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(add) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 ; 
+    J(eq) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 ; 
+    J(err) = 0 ; 
+    J(false) = 0 ; 
+    J(id) = Lam[y0].1 ; 
+    J(nul) = Lam[y0].2 ; 
+    J(pred) = Lam[y0].0 ; 
+    J(s) = Lam[y0].3 + 3*y0 ; 
+    J(true) = 0 ; 
+    J(zero) = 3 
+
+  ]
+
+(**
+
+  [[nul zero]] = 5 > 0 = [[true]] 
+  [[nul s(_x0)]] = 5 + 4*x0 > 0 = [[false]] 
+  [[nul err]] = 2 > 0 = [[false]] 
+  [[pred(zero)]] = 3 > 0 = [[err]] 
+  [[pred(s(_x0))]] = 3 + 4*x0 > x0 = [[_x0]] 
+  [[id _x0]] = 1 + x0 > x0 = [[_x0]] 
+  [[eq(zero)]] = Lam[y0].15 + 9*y0 > Lam[y0].2 = [[nul]] 
+  [[eq(s(_x0))]] = Lam[y0].15 + 9*y0 + 12*y0*x0 + 16*x0 > Lam[y0].3 + y0 + 3*x0*y0 + 4*x0 = [[/\x.eq(_x0) pred(x)]] 
+  [[add(zero)]] = Lam[y0].15 + 9*y0 > Lam[y0].1 = [[id]] 
+  [[add(s(_x0))]] = Lam[y0].15 + 9*y0 + 12*y0*x0 + 16*x0 > Lam[y0].6 + 4*y0 + 12*x0*y0 + 13*x0 = [[/\x.add(_x0) s(x)]] 
+
+**)
+
+Removed: [
+
+  nul zero => true ; 
+  nul s(X) => false ; 
+  nul err => false ; 
+  pred(zero) => err ; 
+  pred(s(X)) => X ; 
+  id X => X ; 
+  eq(zero) => nul ; 
+  eq(s(X)) => /\x.eq(X) pred(x) ; 
+  add(zero) => id ; 
+  add(s(X)) => /\x.add(X) s(x) 
+
+]
+

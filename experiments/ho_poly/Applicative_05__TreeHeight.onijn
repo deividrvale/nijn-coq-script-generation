@@ -1,0 +1,78 @@
+YES
+  Signature: [
+
+    cons : [d * c] --> c ; 
+    false : [] --> a ; 
+    height : [] --> d -> d ; 
+    IF : [a * d] --> d ; 
+    le : [d * d] --> a ; 
+    map : [d -> d * c] --> c ; 
+    maxlist : [d * c] --> d ; 
+    nil : [] --> c ; 
+    node : [b * c] --> d ; 
+    s : [d] --> d ; 
+    true : [] --> a ; 
+    zero : [] --> d 
+
+  ]
+
+  Rules: [
+
+    map(f, nil) => nil ; 
+    map(f, cons(x, y)) => cons(f x, map(f, y)) ; 
+    le(zero, x) => true ; 
+    le(s(x), zero) => false ; 
+    le(s(x), s(y)) => le(x, y) ; 
+    maxlist(x, cons(y, z)) => IF(le(x, y), maxlist(y, z)) ; 
+    maxlist(x, nil) => x ; 
+    height node(x, y) => s(maxlist(zero, map(height, y))) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(cons) = Lam[y0;y1].3 ; 
+    J(false) = 0 ; 
+    J(height) = Lam[y0].0 ; 
+    J(IF) = Lam[y0;y1].0 ; 
+    J(le) = Lam[y0;y1].3 ; 
+    J(map) = Lam[G0;y1].y1 + 3*y1*G0(y1) + 3*G0(y1) ; 
+    J(maxlist) = Lam[y0;y1].y1 ; 
+    J(nil) = 3 ; 
+    J(node) = Lam[y0;y1].3 + 3*y1 ; 
+    J(s) = Lam[y0].1 ; 
+    J(true) = 0 ; 
+    J(zero) = 0 
+
+  ]
+
+(**
+
+  [[map(_F0, nil)]] = 6 + F0(0) + 12*F0(3) > 3 = [[nil]] 
+  [[map(_F0, cons(_x1, _x2))]] = 6 + 2*x1 + 2*x2 + F0(0) + 3*x1*F0(3 + x1 + x2) + 3*x2*F0(3 + x1 + x2) + 12*F0(3 + x1 + x2) > 3 + x1 + 2*x2 + F0(0) + F0(x1) + 3*x2*F0(x2) + 3*F0(x2) = [[cons(_F0 _x1, map(_F0, _x2))]] 
+  [[le(zero, _x0)]] = 3 + x0 > 0 = [[true]] 
+  [[le(s(_x0), zero)]] = 4 + x0 > 0 = [[false]] 
+  [[le(s(_x0), s(_x1))]] = 5 + x0 + x1 > 3 + x0 + x1 = [[le(_x0, _x1)]] 
+  [[maxlist(_x0, cons(_x1, _x2))]] = 6 + x0 + 2*x1 + 2*x2 > 3 + x0 + 2*x1 + 2*x2 = [[IF(le(_x0, _x1), maxlist(_x1, _x2))]] 
+  [[maxlist(_x0, nil)]] = 6 + x0 > x0 = [[_x0]] 
+  [[height node(_x0, _x1)]] = 3 + x0 + 4*x1 > 1 + 4*x1 = [[s(maxlist(zero, map(height, _x1)))]] 
+
+**)
+
+Removed: [
+
+  map(F, nil) => nil ; 
+  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
+  le(zero, X) => true ; 
+  le(s(X), zero) => false ; 
+  le(s(X), s(Y)) => le(X, Y) ; 
+  maxlist(X, cons(Y, Z)) => IF(le(X, Y), maxlist(Y, Z)) ; 
+  maxlist(X, nil) => X ; 
+  height node(X, Y) => s(maxlist(zero, map(height, Y))) 
+
+]
+

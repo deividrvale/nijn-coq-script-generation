@@ -1,0 +1,74 @@
+YES
+  Signature: [
+
+    eq : [a * a] --> c ; 
+    false : [] --> c ; 
+    fork : [b * a * b] --> b ; 
+    IF : [c * c * c] --> c ; 
+    lt : [a * a] --> c ; 
+    member : [a * b] --> c ; 
+    null : [] --> b ; 
+    s : [a] --> a ; 
+    true : [] --> c ; 
+    zero : [] --> a 
+
+  ]
+
+  Rules: [
+
+    lt(s(x), s(y)) => lt(x, y) ; 
+    lt(zero, s(x)) => true ; 
+    lt(x, zero) => false ; 
+    eq(x, x) => true ; 
+    eq(s(x), zero) => false ; 
+    eq(zero, s(x)) => false ; 
+    member(x, null) => false ; 
+    member(x, fork(y, z, u)) => IF(lt(x, z), member(x, y), IF(eq(x, z), true, member(x, u))) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(eq) = Lam[y0;y1].1 ; 
+    J(false) = 0 ; 
+    J(fork) = Lam[y0;y1;y2].3 + 3*y0 + 3*y0*y1 + 3*y0*y2 + 3*y1 + 3*y1*y2 + 3*y2 ; 
+    J(IF) = Lam[y0;y1;y2].0 ; 
+    J(lt) = Lam[y0;y1].y0 ; 
+    J(member) = Lam[y0;y1].2*y0*y1 + 2*y1 ; 
+    J(null) = 3 ; 
+    J(s) = Lam[y0].3 + 3*y0 ; 
+    J(true) = 0 ; 
+    J(zero) = 3 
+
+  ]
+
+(**
+
+  [[lt(s(_x0), s(_x1))]] = 9 + 4*x1 + 8*x0 > x1 + 2*x0 = [[lt(_x0, _x1)]] 
+  [[lt(zero, s(_x0))]] = 9 + 4*x0 > 0 = [[true]] 
+  [[lt(_x0, zero)]] = 3 + 2*x0 > 0 = [[false]] 
+  [[eq(_x0, _x0)]] = 1 + 2*x0 > 0 = [[true]] 
+  [[eq(s(_x0), zero)]] = 7 + 4*x0 > 0 = [[false]] 
+  [[eq(zero, s(_x0))]] = 7 + 4*x0 > 0 = [[false]] 
+  [[member(_x0, null)]] = 9 + 7*x0 > 0 = [[false]] 
+  [[member(_x0, fork(_x1, _x2, _x3))]] = 9 + 6*x0*x1*x2 + 6*x0*x1*x3 + 6*x0*x2*x3 + 7*x0 + 8*x0*x1 + 8*x0*x2 + 8*x0*x3 + 9*x1*x2 + 9*x1*x3 + 9*x2*x3 + 12*x1 + 12*x2 + 12*x3 > 1 + 2*x0*x1 + 2*x0*x3 + 2*x2 + 3*x1 + 3*x3 + 5*x0 = [[IF(lt(_x0, _x2), member(_x0, _x1), IF(eq(_x0, _x2), true, member(_x0, _x3)))]] 
+
+**)
+
+Removed: [
+
+  lt(s(X), s(Y)) => lt(X, Y) ; 
+  lt(zero, s(X)) => true ; 
+  lt(X, zero) => false ; 
+  eq(X, X) => true ; 
+  eq(s(X), zero) => false ; 
+  eq(zero, s(X)) => false ; 
+  member(X, null) => false ; 
+  member(X, fork(Y, Z, U)) => IF(lt(X, Z), member(X, Y), IF(eq(X, Z), true, member(X, U))) 
+
+]
+

@@ -1,0 +1,62 @@
+YES
+  Signature: [
+
+    append : [c * c] --> c ; 
+    cons : [b * c] --> c ; 
+    flatwith : [a -> b * b] --> c ; 
+    flatwithsub : [a -> b * c] --> c ; 
+    leaf : [a] --> b ; 
+    nil : [] --> c ; 
+    node : [c] --> b 
+
+  ]
+
+  Rules: [
+
+    append(nil, x) => x ; 
+    append(cons(x, y), z) => cons(x, append(y, z)) ; 
+    flatwith(f, leaf(x)) => cons(f x, nil) ; 
+    flatwith(f, node(x)) => flatwithsub(f, x) ; 
+    flatwithsub(f, nil) => nil ; 
+    flatwithsub(f, cons(x, y)) => append(flatwith(f, x), flatwithsub(f, y)) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(append) = Lam[y0;y1].y0 ; 
+    J(cons) = Lam[y0;y1].2 + 2*y0 ; 
+    J(flatwith) = Lam[G0;y1].2*y1 + 3*y1*G0(y1) ; 
+    J(flatwithsub) = Lam[G0;y1].3 + 3*y1 + G0(y1) + 3*y1*G0(y1) ; 
+    J(leaf) = Lam[y0].3 + 3*y0 ; 
+    J(nil) = 1 ; 
+    J(node) = Lam[y0].3 + 3*y0 
+
+  ]
+
+(**
+
+  [[append(nil, _x0)]] = 2 + x0 > x0 = [[_x0]] 
+  [[append(cons(_x0, _x1), _x2)]] = 4 + x2 + 2*x1 + 6*x0 > 2 + x2 + 2*x1 + 3*x0 = [[cons(_x0, append(_x1, _x2))]] 
+  [[flatwith(_F0, leaf(_x1))]] = 9 + 12*x1 + F0(0) + 9*F0(3 + 4*x1) + 12*x1*F0(3 + 4*x1) > 3 + 3*x1 + 3*F0(x1) = [[cons(_F0 _x1, nil)]] 
+  [[flatwith(_F0, node(_x1))]] = 9 + 12*x1 + F0(0) + 9*F0(3 + 4*x1) + 12*x1*F0(3 + 4*x1) > 3 + 4*x1 + F0(0) + F0(x1) + 3*x1*F0(x1) = [[flatwithsub(_F0, _x1)]] 
+  [[flatwithsub(_F0, nil)]] = 7 + F0(0) + 4*F0(1) > 1 = [[nil]] 
+  [[flatwithsub(_F0, cons(_x1, _x2))]] = 11 + 4*x2 + 12*x1 + F0(0) + 3*x2*F0(2 + x2 + 3*x1) + 7*F0(2 + x2 + 3*x1) + 9*x1*F0(2 + x2 + 3*x1) > 3 + 4*x2 + 6*x1 + F0(x2) + 3*x2*F0(x2) + 3*F0(0) + 6*x1*F0(x1) = [[append(flatwith(_F0, _x1), flatwithsub(_F0, _x2))]] 
+
+**)
+
+Removed: [
+
+  append(nil, X) => X ; 
+  append(cons(X, Y), Z) => cons(X, append(Y, Z)) ; 
+  flatwith(F, leaf(X)) => cons(F X, nil) ; 
+  flatwith(F, node(X)) => flatwithsub(F, X) ; 
+  flatwithsub(F, nil) => nil ; 
+  flatwithsub(F, cons(X, Y)) => append(flatwith(F, X), flatwithsub(F, Y)) 
+
+]
+

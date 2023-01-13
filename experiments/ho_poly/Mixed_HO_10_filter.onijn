@@ -1,0 +1,74 @@
+YES
+  Signature: [
+
+    bool : [nat] --> boolean ; 
+    cons : [nat * list] --> list ; 
+    consIF : [boolean * nat * list] --> list ; 
+    false : [] --> boolean ; 
+    filter : [nat -> boolean * list] --> list ; 
+    nil : [] --> list ; 
+    rand : [nat] --> nat ; 
+    s : [nat] --> nat ; 
+    true : [] --> boolean ; 
+    zero : [] --> nat 
+
+  ]
+
+  Rules: [
+
+    rand(x) => x ; 
+    rand(s(x)) => rand(x) ; 
+    bool(zero) => false ; 
+    bool(s(zero)) => true ; 
+    filter(f, nil) => nil ; 
+    filter(f, cons(x, y)) => consIF(f x, x, filter(f, y)) ; 
+    consIF(true, x, y) => cons(x, y) ; 
+    consIF(false, x, y) => y 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(bool) = Lam[y0].3 + 3*y0 ; 
+    J(cons) = Lam[y0;y1].3 + 2*y1 + 3*y0 + 3*y0*y1 ; 
+    J(consIF) = Lam[y0;y1;y2].2 + 2*y2 + 3*y1 + 3*y1*y2 ; 
+    J(false) = 1 ; 
+    J(filter) = Lam[G0;y1].1 + y1 + 2*y1*G0(y1) ; 
+    J(nil) = 3 ; 
+    J(rand) = Lam[y0].3 + 3*y0 ; 
+    J(s) = Lam[y0].3 + 3*y0 ; 
+    J(true) = 2 ; 
+    J(zero) = 3 
+
+  ]
+
+(**
+
+  [[rand(_x0)]] = 3 + 4*x0 > x0 = [[_x0]] 
+  [[rand(s(_x0))]] = 15 + 16*x0 > 3 + 4*x0 = [[rand(_x0)]] 
+  [[bool(zero)]] = 15 > 1 = [[false]] 
+  [[bool(s(zero))]] = 63 > 2 = [[true]] 
+  [[filter(_F0, nil)]] = 7 + F0(0) + 6*F0(3) > 3 = [[nil]] 
+  [[filter(_F0, cons(_x1, _x2))]] = 7 + 6*x1*x2 + 6*x2 + 8*x1 + F0(0) + 6*x1*x2*F0(3 + 3*x1*x2 + 3*x2 + 4*x1) + 6*x2*F0(3 + 3*x1*x2 + 3*x2 + 4*x1) + 6*F0(3 + 3*x1*x2 + 3*x2 + 4*x1) + 8*x1*F0(3 + 3*x1*x2 + 3*x2 + 4*x1) > 5 + 6*x1*x2 + 6*x2 + 8*x1 + F0(x1) + 3*x1*F0(0) + 3*F0(0) + 6*x1*x2*F0(x2) + 6*x2*F0(x2) = [[consIF(_F0 _x1, _x1, filter(_F0, _x2))]] 
+  [[consIF(true, _x0, _x1)]] = 4 + 3*x0*x1 + 3*x1 + 4*x0 > 3 + 3*x0*x1 + 3*x1 + 4*x0 = [[cons(_x0, _x1)]] 
+  [[consIF(false, _x0, _x1)]] = 3 + 3*x0*x1 + 3*x1 + 4*x0 > x1 = [[_x1]] 
+
+**)
+
+Removed: [
+
+  rand(X) => X ; 
+  rand(s(X)) => rand(X) ; 
+  bool(zero) => false ; 
+  bool(s(zero)) => true ; 
+  filter(F, nil) => nil ; 
+  filter(F, cons(X, Y)) => consIF(F X, X, filter(F, Y)) ; 
+  consIF(true, X, Y) => cons(X, Y) ; 
+  consIF(false, X, Y) => Y 
+
+]
+

@@ -1,0 +1,54 @@
+YES
+  Signature: [
+
+    cons : [a * b] --> b ; 
+    nil : [] --> b ; 
+    plus : [b * b] --> b ; 
+    s : [b] --> b ; 
+    sumwith : [a -> b * b] --> b ; 
+    zero : [] --> b 
+
+  ]
+
+  Rules: [
+
+    plus(zero, x) => x ; 
+    plus(s(x), y) => s(plus(x, y)) ; 
+    sumwith(f, nil) => nil ; 
+    sumwith(f, cons(x, y)) => plus(f x, sumwith(f, y)) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(cons) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
+    J(nil) = 3 ; 
+    J(plus) = Lam[y0;y1].y0 ; 
+    J(s) = Lam[y0].3 ; 
+    J(sumwith) = Lam[G0;y1].3 + 2*y1 + 2*G0(y1) + 3*y1*G0(y1) ; 
+    J(zero) = 3 
+
+  ]
+
+(**
+
+  [[plus(zero, _x0)]] = 6 + x0 > x0 = [[_x0]] 
+  [[plus(s(_x0), _x1)]] = 6 + x1 + 2*x0 > 3 + x1 + 2*x0 = [[s(plus(_x0, _x1))]] 
+  [[sumwith(_F0, nil)]] = 12 + F0(0) + 11*F0(3) > 3 = [[nil]] 
+  [[sumwith(_F0, cons(_x1, _x2))]] = 12 + 9*x1*x2 + 12*x1 + 12*x2 + F0(0) + 9*x1*x2*F0(3 + 3*x1*x2 + 4*x1 + 4*x2) + 11*F0(3 + 3*x1*x2 + 4*x1 + 4*x2) + 12*x1*F0(3 + 3*x1*x2 + 4*x1 + 4*x2) + 12*x2*F0(3 + 3*x1*x2 + 4*x1 + 4*x2) > 3 + 2*x1 + 3*x2 + F0(0) + 2*F0(x1) + 2*F0(x2) + 3*x2*F0(x2) = [[plus(_F0 _x1, sumwith(_F0, _x2))]] 
+
+**)
+
+Removed: [
+
+  plus(zero, X) => X ; 
+  plus(s(X), Y) => s(plus(X, Y)) ; 
+  sumwith(F, nil) => nil ; 
+  sumwith(F, cons(X, Y)) => plus(F X, sumwith(F, Y)) 
+
+]
+

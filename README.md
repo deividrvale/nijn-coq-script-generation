@@ -43,3 +43,18 @@ you run it by providing an input file and an output file with the ``-o`` option.
 
 The output is a Coq proof script asserting the termination
 of the term rewriting system described in the input file.
+
+## Run Experiments
+
+Experiment files are provided in the folder ``./experiments/ho_poly``.
+
+The batch of experiments can be run from the script
+``run_experiments.sh`` provided at the root of the project.
+
+**Important:** to run the experiments:
+
+    make
+    chmod oug+x run_experiments.sh
+    ./run_experiments.sh
+
+## Experimental Setup

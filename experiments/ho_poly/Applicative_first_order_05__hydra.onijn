@@ -1,0 +1,84 @@
+YES
+  Signature: [
+
+    cons : [c * c] --> c ; 
+    copy : [a * c * c] --> c ; 
+    f : [c] --> c ; 
+    false : [] --> b ; 
+    filter : [c -> b * c] --> c ; 
+    filter2 : [b * c -> b * c * c] --> c ; 
+    map : [c -> c * c] --> c ; 
+    n : [] --> a ; 
+    nil : [] --> c ; 
+    s : [a] --> a ; 
+    true : [] --> b ; 
+    zero : [] --> a 
+
+  ]
+
+  Rules: [
+
+    f(cons(nil, x)) => x ; 
+    f(cons(f(cons(nil, x)), y)) => copy(n, x, y) ; 
+    copy(zero, x, y) => f(y) ; 
+    copy(s(x), y, z) => copy(x, y, cons(f(y), z)) ; 
+    map(g, nil) => nil ; 
+    map(g, cons(x, y)) => cons(g x, map(g, y)) ; 
+    filter(g, nil) => nil ; 
+    filter(g, cons(x, y)) => filter2(g x, g, x, y) ; 
+    filter2(true, g, x, y) => cons(x, filter(g, y)) ; 
+    filter2(false, g, x, y) => filter(g, y) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(cons) = Lam[y0;y1].2 + 3*y0 ; 
+    J(copy) = Lam[y0;y1;y2].3*y0 + 3*y0*y1 ; 
+    J(f) = Lam[y0].2 ; 
+    J(false) = 3 ; 
+    J(filter) = Lam[G0;y1].2 + 2*y1 + 2*G0(y1) + 3*y1*G0(y1) ; 
+    J(filter2) = Lam[y0;G1;y2;y3].3 + 2*y3 + 3*y2 + 2*G1(0) + 3*y3*G1(y3) + 3*G1(y3) ; 
+    J(map) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ; 
+    J(n) = 0 ; 
+    J(nil) = 3 ; 
+    J(s) = Lam[y0].3 + 3*y0 ; 
+    J(true) = 3 ; 
+    J(zero) = 3 
+
+  ]
+
+(**
+
+  [[f(cons(nil, _x0))]] = 16 + x0 > x0 = [[_x0]] 
+  [[f(cons(f(cons(nil, _x0)), _x1))]] = 68 + x1 + 4*x0 > x0 + x1 = [[copy(n, _x0, _x1)]] 
+  [[copy(zero, _x0, _x1)]] = 12 + x1 + 10*x0 > 2 + x1 = [[f(_x1)]] 
+  [[copy(s(_x0), _x1, _x2)]] = 12 + x2 + 10*x1 + 12*x0*x1 + 16*x0 > 10 + x2 + 3*x0*x1 + 4*x0 + 5*x1 = [[copy(_x0, _x1, cons(f(_x1), _x2))]] 
+  [[map(_F0, nil)]] = 12 + F0(0) + 9*F0(3) > 3 = [[nil]] 
+  [[map(_F0, cons(_x1, _x2))]] = 8 + 4*x2 + 16*x1 + F0(0) + 3*x2*F0(2 + x2 + 4*x1) + 6*F0(2 + x2 + 4*x1) + 12*x1*F0(2 + x2 + 4*x1) > 2 + 4*x1 + 4*x2 + F0(0) + 3*x2*F0(x2) + 4*F0(x1) = [[cons(_F0 _x1, map(_F0, _x2))]] 
+  [[filter(_F0, nil)]] = 11 + F0(0) + 11*F0(3) > 3 = [[nil]] 
+  [[filter(_F0, cons(_x1, _x2))]] = 8 + 3*x2 + 12*x1 + F0(0) + 3*x2*F0(2 + x2 + 4*x1) + 8*F0(2 + x2 + 4*x1) + 12*x1*F0(2 + x2 + 4*x1) > 3 + 3*x2 + 5*x1 + F0(x1) + 3*x2*F0(x2) + 3*F0(0) + 3*F0(x2) = [[filter2(_F0 _x1, _F0, _x1, _x2)]] 
+  [[filter2(true, _F0, _x1, _x2)]] = 6 + 3*x2 + 4*x1 + 3*x2*F0(x2) + 3*F0(0) + 3*F0(x2) > 4 + 3*x2 + 4*x1 + F0(0) + 2*F0(x2) + 3*x2*F0(x2) = [[cons(_x1, filter(_F0, _x2))]] 
+  [[filter2(false, _F0, _x1, _x2)]] = 6 + 3*x2 + 4*x1 + 3*x2*F0(x2) + 3*F0(0) + 3*F0(x2) > 2 + 3*x2 + F0(0) + 2*F0(x2) + 3*x2*F0(x2) = [[filter(_F0, _x2)]] 
+
+**)
+
+Removed: [
+
+  f(cons(nil, X)) => X ; 
+  f(cons(f(cons(nil, X)), Y)) => copy(n, X, Y) ; 
+  copy(zero, X, Y) => f(Y) ; 
+  copy(s(X), Y, Z) => copy(X, Y, cons(f(Y), Z)) ; 
+  map(F, nil) => nil ; 
+  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
+  filter(F, nil) => nil ; 
+  filter(F, cons(X, Y)) => filter2(F X, F, X, Y) ; 
+  filter2(true, F, X, Y) => cons(X, filter(F, Y)) ; 
+  filter2(false, F, X, Y) => filter(F, Y) 
+
+]
+

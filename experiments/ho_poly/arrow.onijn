@@ -1,0 +1,39 @@
+YES
+  Signature: [
+
+    and : [c * c] --> c ; 
+    arrow : [t * t] --> t ; 
+    lessthan : [t * t] --> c 
+
+  ]
+
+  Rules: [
+
+    lessthan(arrow(x, y), arrow(z, u)) => and(lessthan(z, x), lessthan(y, u)) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(and) = Lam[y0;y1].0 ; 
+    J(arrow) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
+    J(lessthan) = Lam[y0;y1].3*y0*y1 
+
+  ]
+
+(**
+
+  [[lessthan(arrow(_x0, _x1), arrow(_x2, _x3))]] = 33 + 27*x0*x1*x2*x3 + 30*x0*x1 + 30*x2*x3 + 36*x0*x1*x2 + 36*x0*x1*x3 + 36*x0*x2*x3 + 36*x1*x2*x3 + 40*x0 + 40*x1 + 40*x2 + 40*x3 + 48*x0*x2 + 48*x0*x3 + 48*x1*x2 + 48*x1*x3 > x0 + x1 + x2 + x3 + 3*x0*x2 + 3*x1*x3 = [[and(lessthan(_x2, _x0), lessthan(_x1, _x3))]] 
+
+**)
+
+Removed: [
+
+  lessthan(arrow(X, Y), arrow(Z, U)) => and(lessthan(Z, X), lessthan(Y, U)) 
+
+]
+

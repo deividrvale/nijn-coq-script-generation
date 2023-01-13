@@ -1,0 +1,37 @@
+YES
+
+  Signature: [
+
+    pair : [nat -> nat * nat] --> nat ;
+    split : [nat] --> nat ;
+    AP1 : [nat -> nat * nat] --> nat
+]
+
+  Rules: [
+
+    split(AP1(F, X)) => pair(F, X) ;
+    AP1(F, X) => F X
+]
+
+  Interpretation: [
+
+    J(pair) = Lam[G0;y1].0 ;
+    J(split) = Lam[y0].3 + 3*y0 ;
+    J(AP1) = Lam[G0;y1].3 + 3*y1 + 3*y1*G0(y1) + 3*G0(0) + 3*G0(y1)
+
+  ]
+
+(**
+
+  [[split(AP1(_F0, _x1))]] = 15 + 16*x1 + 12*x1*F0(x1) + 12*F0(x1) + 16*F0(0) > x1 + F0(0) = [[pair(_F0, _x1)]]
+  [[AP1(_F0, _x1)]] = 3 + 4*x1 + 3*x1*F0(x1) + 3*F0(x1) + 4*F0(0) > x1 + F0(x1) = [[_F0 _x1]]
+
+**)
+
+Removed: [
+
+  split(AP1(F, X)) => pair(F, X) ;
+  AP1(F, X) => F X
+
+]
+

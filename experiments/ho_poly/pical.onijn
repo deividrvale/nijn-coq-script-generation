@@ -1,0 +1,70 @@
+YES
+
+  Signature: [
+
+    NIL : [] --> A ;
+    IN : [N * N -> A] --> A ;
+    new : [N -> A] --> A ;
+    out : [N * N * A] --> A ;
+    sum : [A * A] --> A ;
+    tau : [A] --> A ;
+    AP1 : [N -> A * N] --> A ;
+    AP2 : [N -> N -> A * N] --> N -> A
+]
+
+  Rules: [
+
+    sum(NIL, X) => X ;
+    new(/\x.X) => X ;
+    new(/\x.sum(AP1(F, x), AP1(G, x))) => sum(new(/\y.AP1(F, y)), new(/\z.AP1(G, z))) ;
+    new(/\x.out(x, X, AP1(F, x))) => NIL ;
+    new(/\x.out(X, Y, AP1(F, x))) => out(X, Y, new(/\y.AP1(F, y))) ;
+    new(/\x.IN(X, /\y.AP1(AP2(F, x), y))) => IN(X, /\z.new(/\u.AP1(AP2(F, u), z))) ;
+    new(/\x.tau(AP1(F, x))) => tau(new(/\y.AP1(F, y))) ;
+    new(/\x.IN(x, /\y.AP1(AP2(F, x), y))) => NIL ;
+    AP1(F, X) => F X ;
+    AP2(F, X) => F X
+]
+
+  Interpretation: [
+
+    J(NIL) = 0 ;
+    J(IN) = Lam[y0;G1].3 + 3*y0 ;
+    J(new) = Lam[G0].1 + 3*G0(0) ;
+    J(out) = Lam[y0;y1;y2].3 + 3*y0 + 3*y1 ;
+    J(sum) = Lam[y0;y1].3 ;
+    J(tau) = Lam[y0].3 ;
+    J(AP1) = Lam[G0;y1].3 + 3*G0(y1) ;
+    J(AP2) = Lam[G0;y1;y2].3 + 3*G0(0,0) + 3*G0(y1,y1) + 3*G0(y1,y2) + 3*G0(y2,y1) + 3*G0(y2,y2)
+
+  ]
+
+(**
+
+  [[sum(NIL, _x0)]] = 3 + x0 > x0 = [[_x0]]
+  [[new(/\x._x0)]] = 1 + 4*x0 > x0 = [[_x0]]
+  [[new(/\x.sum(AP1(_F0, x), AP1(_F1, x)))]] = 37 + 16*F0(0) + 16*F1(0) > 29 + 16*F0(0) + 16*F1(0) = [[sum(new(/\x.AP1(_F0, x)), new(/\y.AP1(_F1, y)))]]
+  [[new(/\x.out(x, _x0, AP1(_F1, x)))]] = 25 + 16*x0 + 16*F1(0) > 0 = [[NIL]]
+  [[new(/\x.out(_x0, _x1, AP1(_F2, x)))]] = 25 + 16*x0 + 16*x1 + 16*F2(0) > 16 + 4*x0 + 4*x1 + 16*F2(0) = [[out(_x0, _x1, new(/\x.AP1(_F2, x)))]]
+  [[new(/\x.IN(_x0, /\y.AP1(AP2(_F1, x), y)))]] = 73 + 16*x0 + 256*F1(0,0) > 64 + 4*x0 + 256*F1(0,0) = [[IN(_x0, /\x.new(/\y.AP1(AP2(_F1, y), x)))]]
+  [[new(/\x.tau(AP1(_F0, x)))]] = 25 + 16*F0(0) > 16 + 16*F0(0) = [[tau(new(/\x.AP1(_F0, x)))]]
+  [[new(/\x.IN(x, /\y.AP1(AP2(_F0, x), y)))]] = 73 + 256*F0(0,0) > 0 = [[NIL]]
+  [[AP1(_F0, _x1)]] = 3 + x1 + F0(0) + 3*F0(x1) > x1 + F0(x1) = [[_F0 _x1]]
+  [[AP2(_F0, _x1)]] = Lam[y0].3 + x1 + 3*F0(y0,y0) + 3*F0(y0,x1) + 3*F0(x1,y0) + 3*F0(x1,x1) + 4*F0(0,0) > Lam[y0].x1 + F0(x1,y0) = [[_F0 _x1]]
+
+**)
+
+Removed: [
+
+  sum(NIL, X) => X ;
+  new(/\x.X) => X ;
+  new(/\x.sum(AP1(F, x), AP1(G, x))) => sum(new(/\y.AP1(F, y)), new(/\z.AP1(G, z))) ;
+  new(/\x.out(x, X, AP1(F, x))) => NIL ;
+  new(/\x.out(X, Y, AP1(F, x))) => out(X, Y, new(/\y.AP1(F, y))) ;
+  new(/\x.IN(X, /\y.AP1(AP2(F, x), y))) => IN(X, /\z.new(/\u.AP1(AP2(F, u), z))) ;
+  new(/\x.tau(AP1(F, x))) => tau(new(/\y.AP1(F, y))) ;
+  new(/\x.IN(x, /\y.AP1(AP2(F, x), y))) => NIL ;
+  AP1(F, X) => F X ;
+  AP2(F, X) => F X
+
+]

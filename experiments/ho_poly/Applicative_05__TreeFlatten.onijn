@@ -1,0 +1,65 @@
+YES
+  Signature: [
+
+    append : [a * a] --> a ; 
+    concat : [a] --> a ; 
+    cons : [a * a] --> a ; 
+    flatten : [] --> a -> a ; 
+    map : [a -> a * a] --> a ; 
+    nil : [] --> a ; 
+    node : [a * a] --> a 
+
+  ]
+
+  Rules: [
+
+    map(f, nil) => nil ; 
+    map(f, cons(x, y)) => cons(f x, map(f, y)) ; 
+    flatten node(x, y) => cons(x, concat(map(flatten, y))) ; 
+    concat(nil) => nil ; 
+    concat(cons(x, y)) => append(x, concat(y)) ; 
+    append(nil, x) => x ; 
+    append(cons(x, y), z) => cons(x, append(y, z)) 
+
+  ]
+
+(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
+
+ 
+
+  Interpretation: [
+
+    J(append) = Lam[y0;y1].y0 ; 
+    J(concat) = Lam[y0].y0 ; 
+    J(cons) = Lam[y0;y1].2 ; 
+    J(flatten) = Lam[y0].0 ; 
+    J(map) = Lam[G0;y1].y1 + 3*y1*G0(y1) + 3*G0(y1) ; 
+    J(nil) = 3 ; 
+    J(node) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 
+
+  ]
+
+(**
+
+  [[map(_F0, nil)]] = 6 + F0(0) + 12*F0(3) > 3 = [[nil]] 
+  [[map(_F0, cons(_x1, _x2))]] = 4 + 2*x1 + 2*x2 + F0(0) + 3*x1*F0(2 + x1 + x2) + 3*x2*F0(2 + x1 + x2) + 9*F0(2 + x1 + x2) > 2 + x1 + 2*x2 + F0(0) + F0(x1) + 3*x2*F0(x2) + 3*F0(x2) = [[cons(_F0 _x1, map(_F0, _x2))]] 
+  [[flatten node(_x0, _x1)]] = 3 + 3*x0*x1 + 4*x0 + 4*x1 > 2 + x0 + 4*x1 = [[cons(_x0, concat(map(flatten, _x1)))]] 
+  [[concat(nil)]] = 6 > 3 = [[nil]] 
+  [[concat(cons(_x0, _x1))]] = 4 + 2*x0 + 2*x1 > 2*x0 + 2*x1 = [[append(_x0, concat(_x1))]] 
+  [[append(nil, _x0)]] = 6 + x0 > x0 = [[_x0]] 
+  [[append(cons(_x0, _x1), _x2)]] = 4 + x2 + 2*x0 + 2*x1 > 2 + x0 + x2 + 2*x1 = [[cons(_x0, append(_x1, _x2))]] 
+
+**)
+
+Removed: [
+
+  map(F, nil) => nil ; 
+  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
+  flatten node(X, Y) => cons(X, concat(map(flatten, Y))) ; 
+  concat(nil) => nil ; 
+  concat(cons(X, Y)) => append(X, concat(Y)) ; 
+  append(nil, X) => X ; 
+  append(cons(X, Y), Z) => cons(X, append(Y, Z)) 
+
+]
+
