@@ -44,6 +44,23 @@ eval $(opam env)
 opam install dune menhir coq.8.16.1
 ```
 
+### Managing opam switches
+
+To see the list of switches, use
+
+```bash
+opam switch
+```
+
+and switching to a new switch is simple.
+For instance,
+
+```bash
+opam switch nijn-onijn
+```
+
+
+
 Run
 
 ```bash
