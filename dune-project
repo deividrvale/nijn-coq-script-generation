@@ -24,8 +24,9 @@
  (synopsis "Coq script genaration from proof trace.")
  (description "OCaml module of Nijn to generate coq scripts for checking termination proofs of higher-order rewriting systems.")
  (depends
-  (ocaml (>= 4.14.0))
-  (dune (>= 3.6.1)))
+  (ocaml  (>= 4.14.0))
+  (dune   (>= 3.6.1))
+  (menhir (>= 20220210)))
  (tags
   (coq "termination checking" "proof generation")))
 
