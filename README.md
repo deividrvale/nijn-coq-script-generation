@@ -59,8 +59,6 @@ For instance,
 opam switch nijn-onijn
 ```
 
-
-
 Run
 
 ```bash
@@ -81,12 +79,12 @@ to install ONijn binaries locally.
 
 ## How to use it
 
-Onijn receives as input a file describing the term rewriting system and an interpretation of each function symbol in its
+ONijn receives as input a file describing the term rewriting system and an interpretation of each function symbol in its
 signature.
 Usually, this is a file in the format ``<file_name>.onijn``.
 The file format is explained in the [API](https://deividrvale.github.io/nijn-coq-script-generation/onijn/index.html#input-file-format).
 
-With onijn installed,
+With ONijn installed,
 you run it by providing an input file and an output file with the ``-o`` option.
 
 ```bash

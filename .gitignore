@@ -28,4 +28,7 @@ setup.log
 # Local OPAM switch
 _opam/
 
+# Experiment data
 .nia.cache
+ho_poly_certificates
+nijn_lib
