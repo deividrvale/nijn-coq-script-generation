@@ -32,3 +32,5 @@ _opam/
 .nia.cache
 ho_poly_certificates
 nijn_lib
+
+.DS_Store
