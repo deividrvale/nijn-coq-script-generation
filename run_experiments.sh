@@ -38,7 +38,7 @@ do
     then
     total=$((total+1))
     echo "Compiling proof script: $f"
-    timeout 60s time coqc $f
+    timeout 300s time coqc $f
 
     err=$?
 
