@@ -38,9 +38,8 @@ answer := YES | NO | MAYBE
 sort, fn, var := ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9']*
 
 type := sort | type -> type
-type_dec := [] --> type | [type * ... * type] --> type
 
-term := var | fn | term term | fn(term, ..., term) | /\var.term
+term := var | fn | term term | /\var.term
 
 rewrite_rule := term => term
 
@@ -53,42 +52,29 @@ the string format accepted as names for sorts, function symbols, and variables,
 respectively.
 
 In algebraic functional systems, type declarations and types are not the same.
-The [type] construct defines the usual simple types,
-meanwhile the [type_dec] construct defines type declarations.
-Type declarations are used to anotate function symbols in the input signature.
-Intuitively,
-a type declaration is a list of input types separated by [*],
-i.e., a list [[<type_1> * ... * <type_n>]],
-and an output type.
-
-For instance, to represent that a symbol [zero] is of type [nat],
-we write: [zero : [] --> nat].
-Notice that the input type list is empty,
-which is in line with the intended interpretation of [zero : nat],
-as [zero] would be a symbol that does not receive any arguments.
-Take for instance [map : (a -> a) -> list -> list],
-which is the type of a monomorphic [map] function over elements of type [a].
-It's type declaration can be written as [map : [(a -> a) * list] --> list].
+The [type] construct defines the usual simple types.
+Expressions in [type] are parsed assuming that [=>] is right-associative,
+as usual.
 
 We can already represent signature and rewriting systems.
 Let us take the [map] TRS as exemple.
 
 {[
-map(F, nil) => nil
-map(F, hd :: tl) => F(hd) :: map(F, tl)
+map F nil => nil
+map F (hd :: tl) => F(hd) :: (map F tl)
 ]}
 
 In {b onijn} format this system is represented as:
 {[
 Signature: [
-  cons : [a * list] --> list;
-  map : [list * a -> a] --> list;
-  nil : [] --> list
+  cons : a -> list -> list ;
+  map : list -> (a -> a) -> list ;
+  nil : list
 ]
 
 Rules: [
-  map(nil, f) => nil ;
-  map(cons(x, y), f) => cons(f x, map(y, f))
+  map nil F => nil ;
+  map (cons X Y) G => cons (G X) (map Y G)
 ]
 ]}
 
@@ -119,8 +105,8 @@ given interpretation.
 
 {[
 Removed: [
-  map(nil, F) => nil ;
-  map(cons(X, Y), F) => cons(F X, map(Y, F))
+  map nil F => nil ;
+  map (cons X Y) G => cons (G X) (map Y G)
 ]
 ]}
 
@@ -129,26 +115,25 @@ Putting everything together we get a file [map_trs.onijn] as follows:
 {[
 (** This is a comment. It will be ignored by onijn. **)
 YES
-
 Signature: [
-  cons : [a * list] --> list      ;
-  map  : [list * a -> a] --> list ;
-  nil  : [] --> list
+  cons : a -> list -> list ;
+  map : list -> (a -> a) -> list ;
+  nil : list
 ]
 
 Rules: [
-  map(nil, f)        => nil ;
-  map(cons(x, y), f) => cons(f x, map(y, f))
+  map nil F => nil ;
+  map (cons X Y) G => cons (G X) (map Y G)
 ]
 
 Interpretation: [
-  J(cons) = Lam[y0;y1].3 + 2*y1;
-  J(map)  = Lam[y0;G1].3*y0 + 3*y0*G1(y0);
-  J(nil)  = 3
+  J(cons) = Lam[y0;y1].3 + 2*y1 ;
+  J(map) = Lam[y0;G1].3*y0 + 3*y0*G1(y0) ;
+  J(nil) = 3
 ]
 
 Removed: [
-  map(nil, F) => nil ;
-  map(cons(X, Y), F) => cons(F X, map(Y, F))
+  map nil F => nil ;
+  map (cons X Y) G => cons (G X) (map Y G)
 ]
 ]}
