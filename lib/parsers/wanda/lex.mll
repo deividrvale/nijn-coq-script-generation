@@ -39,7 +39,6 @@ rule lexer = parse
   | "Interpretation" { INT_ID }
   | "=>"              { RW_ARR }
   | "->"              { TY_ARR }
-  | "-->"           { DC_ARR }
   | name               { STRING (Lexing.lexeme lexbuf) }
   | number              { INT (int_of_string( Lexing.lexeme lexbuf )) }
   | _                  { raise (SyntaxError ("Unexpected character: " ^ Lexing.lexeme lexbuf))}

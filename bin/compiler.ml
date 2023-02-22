@@ -51,11 +51,7 @@ let set_compiler (new_config : config) =
   config.format <- new_config.format;
   config.tt <- new_config.tt
 
-(*  *)
-let int_data = File.Wanda.process_file
-
-(* Compile the parser and file module to generate a proof string
-*)
+(* Compile the parser and file module to generate a proof string *)
 let compile_wanda_no_rr file =
   let parsed_file =
     Wanda_parser.parse_from_string

@@ -1,7 +1,6 @@
 %{
   open File.Wanda
   open Syntax.Poly
-  open Syntax.Ty
 %}
 
 // Tokens
@@ -13,7 +12,6 @@
 %token <int> INT
 %token RW_ARR
 %token TY_ARR
-%token DC_ARR
 %token LPAREN
 %token RPAREN
 %token LBRACE
@@ -44,11 +42,10 @@
 %right TY_ARR
 %right PLUS
 %left STAR
-%nonassoc SEP
+// %nonassoc SEP
 
 // Types of each declaration
 %type < answer > answer
-// %type < tydec > ty_dec
 %type < string * fakeTy > fn_dec
 %type < signature > signature
 %type < (term_tree * term_tree) list > trs
@@ -56,8 +53,6 @@
 // debug parser, the type is abstract
 %type < 'a > debug_parser
 %type < parsed_file > file
-
-%right TARR
 
 %%
 
@@ -75,9 +70,6 @@ fake_ty:
     | baseT { Name $1 }
     | fake_ty TY_ARR fake_ty { Arr ($1, $3) }
     | LPAREN fake_ty RPAREN { $2 }
-
-dom:
-    LBRACE ds = separated_list(STAR, fake_ty) RBRACE {In ds}
 
 fn_dec:
     | STRING COLON fake_ty { ($1, $3) }
@@ -98,7 +90,6 @@ app:
 non_app:
   | symb                    { $1 }
   | LPAREN term_tree RPAREN { $2 }
-  // | STRING LPAREN args = separated_nonempty_list(COMMA, term_tree) RPAREN { FApp ($1, args) }
 
 symb:
   | STRING { S $1 }
