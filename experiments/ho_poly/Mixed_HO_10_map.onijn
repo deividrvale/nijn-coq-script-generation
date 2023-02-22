@@ -1,21 +1,23 @@
 YES
-Signature: [
-  cons : [a * list] --> list ;
-  map : [list * a -> a] --> list ;
-  nil : [] --> list
+Signature: [ 
+  cons : a -> list -> list ;
+  map : list -> (a -> a) -> list ;
+  nil : list
 ]
+
 Rules: [
-  map(nil, f) => nil ;
-  map(cons(x, y), f) => cons(f x, map(y, f))
+  map nil F => nil ;
+  map (cons X Y) G => cons (G X) (map Y G)
 ]
+
 Interpretation: [
   J(cons) = Lam[y0;y1].3 + 2*y1 ;
   J(map) = Lam[y0;G1].3*y0 + 3*y0*G1(y0) ;
-  J(nil) = 3
+  J(nil) = 3 
 ]
 
 Removed: [
-  map(nil, F) => nil ;
-  map(cons(X, Y), F) => cons(F X, map(Y, F))
+  map nil F => nil ;
+  map (cons X Y) G => cons (G X) (map Y G)
 ]
 

@@ -22,11 +22,6 @@ type fakeTy =
   | Name of string
   | Arr of fakeTy * fakeTy
 
-(*  *)
-let rec fakeTy_to_ty = function
-  | Name n -> Ty.SType.base_ty_mk (Ty.SType.get_sort n)
-  | Arr(a,b) -> Ty.SType.arr_ty_mk (fakeTy_to_ty a) (fakeTy_to_ty b)
-
 let rec fakeTy_to_string = function
   | Name s -> s
   | Arr (a, b) ->
@@ -45,81 +40,22 @@ let rec names_of_fakeTy = function
   | Arr(fake1, fake2) ->
     StringSet.union (names_of_fakeTy fake1) (names_of_fakeTy fake2)
 
-(* Type Declarations --------------------------------------------------------*)
-(*
-  Type declarations are not types, but they can be used to generate types.
-  The from wanda's output
-  <fun_name : string> : [fakety * ... * fakety ] --> <sort_name : string >
-*)
-type dom =
-  | In of fakeTy list
-and im =
-  | Out of fakeTy
-and tydec =
-  | Dec of dom * im
+let rec fakeTy_to_ty = function
+  | Name n -> Ty.SType.base_ty_mk (Ty.SType.get_sort n)
+  | Arr(a,b) -> Ty.SType.arr_ty_mk (fakeTy_to_ty a) (fakeTy_to_ty b)
 
-let rec dom_to_ty (In xs) =
-  match xs with
-  | [] -> []
-  | hd :: tl ->
-    (fakeTy_to_ty hd) :: (dom_to_ty (In tl))
+(* Signatures ---------------------------------------------------------------*)
+type signature = (string * fakeTy) list
 
-let im_to_ty (Out ft) =
-  fakeTy_to_ty ft
-
-let dom_equal x y =
-  match (x, y) with
-  | (In ty1, In ty2) -> List.equal fake_ty_equal ty1 ty2
-
-let im_equal x y =
-  match (x, y) with
-  | (Out st1, Out st2) -> fake_ty_equal st1 st2
-
-let tydec_equal x y =
-  match (x,y) with
-  | (Dec(d1,i1), Dec(d2, i2)) ->
-    (dom_equal d1 d2) && (im_equal i1 i2)
-
-let typedec_mk dom im =
-  Dec(dom, im)
-
-let typedec_get_dom = function
-  Dec(In d, _) -> d
-
-let typedec_get_im = function
-  Dec(_, Out st) -> st
-
-let tydec_to_ty (s : tydec) =
-  let dom = dom_to_ty (In (typedec_get_dom s)) in
-    let rec ds_to_ty = (fun ds ->
-    match ds with
-    | hd :: [] -> Ty.SType.arr_ty_mk hd (fakeTy_to_ty (typedec_get_im s))
-    | hd :: tl ->
-      Ty.SType.arr_ty_mk hd (ds_to_ty tl)
-    | [] -> fakeTy_to_ty (typedec_get_im s)
-    ) in ds_to_ty dom
-
-(* Unique names in a type declaration (as I'm using sets.) *)
-let names_of_tydec = function
-  Dec (In i, Out o) ->
-      StringSet.union (
-        List.fold_left
-        (StringSet.union)
-        StringSet.empty
-        (List.map names_of_fakeTy i)
-      ) (names_of_fakeTy o)
-
-type signature = (string * tydec) list
-
-(* We need to register *)
+(* Register signature register the names in the types
+and in the function symbols from the signature. *)
 let register_signature (s : signature) =
-  (* The set of names in the signature are the
-  *)
+  (* The set of names in the signature are the *)
   let sort_names =
     Utils.Lists.remove_duplicates String.equal (
       StringSet.elements (
         List.fold_left StringSet.union StringSet.empty
-        (List.map (fun x -> names_of_tydec (snd x)) s))
+        (List.map (fun x -> names_of_fakeTy (snd x)) s))
     )
   in List.iter (fun x -> let _ = Ty.SType.sort_register x in () ) sort_names;
   (* Register function symbol names *)
@@ -127,7 +63,7 @@ let register_signature (s : signature) =
     List.map fst s
   in List.iter (fun x -> let _ = Term.fn_register x in ()) fn_names;
   (* Register arities for each function symbol *)
-  List.iter (fun (f, ty) -> Term.fn_register_ty (Term.get_fn f) (tydec_to_ty ty)) s
+  List.iter (fun (f, ty) -> Term.fn_register_ty (Term.get_fn f) (fakeTy_to_ty ty)) s
 
 (* Terms --------------------------------------------------------------------*)
 
@@ -175,7 +111,7 @@ let rec term_tree_to_string = function
   | App(s,t) ->
     "(" ^ (term_tree_to_string s) ^ " " ^ (term_tree_to_string t) ^ ")"
 
-(* Terms rewriting systesm --------------------------------------------------*)
+(* Term rewriting systes ----------------------------------------------------*)
 
 type trs = (term_tree * term_tree) list
 

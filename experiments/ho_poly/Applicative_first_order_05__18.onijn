@@ -1,69 +1,45 @@
 YES
-  Signature: [
+Signature: [
+  facplus : b -> b -> b ;
+  factimes : a -> b -> b ;
+  cons : d -> e -> e ;
+  false : c ;
+  filter : (d -> c) -> e -> e ;
+  filter2 : c -> (d -> c) -> d -> e -> e ;
+  map : (d -> d) -> e -> e ;
+  nil : e ;
+  true : c
+]
 
-    facplus : [b * b] --> b ; 
-    factimes : [a * b] --> b ; 
-    cons : [d * e] --> e ; 
-    false : [] --> c ; 
-    filter : [d -> c * e] --> e ; 
-    filter2 : [c * d -> c * d * e] --> e ; 
-    map : [d -> d * e] --> e ; 
-    nil : [] --> e ; 
-    true : [] --> c 
+Rules: [
+  factimes X (facplus Y Z) => facplus (factimes X Y) (factimes X Z) ;
+  map F nil => nil ;
+  map G (cons U V) => cons (G U) (map G V) ;
+  filter H nil => nil ;
+  filter I (cons W Q) => filter2 (I W) I W Q ;
+  filter2 true J R S => cons R (filter J S) ;
+  filter2 false K T X => filter K X
+]
 
-  ]
-
-  Rules: [
-
-    factimes(x, facplus(y, z)) => facplus(factimes(x, y), factimes(x, z)) ; 
-    map(f, nil) => nil ; 
-    map(f, cons(x, y)) => cons(f x, map(f, y)) ; 
-    filter(f, nil) => nil ; 
-    filter(f, cons(x, y)) => filter2(f x, f, x, y) ; 
-    filter2(true, f, x, y) => cons(x, filter(f, y)) ; 
-    filter2(false, f, x, y) => filter(f, y) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(facplus) = Lam[y0;y1].3 ; 
-    J(factimes) = Lam[y0;y1].y1 + y0*y1 ; 
-    J(cons) = Lam[y0;y1].3 + 3*y0 ; 
-    J(false) = 3 ; 
-    J(filter) = Lam[G0;y1].3 + 3*y1 + G0(0) + G0(y1) + 3*y1*G0(y1) ; 
-    J(filter2) = Lam[y0;G1;y2;y3].3 + 3*y0 + 3*y2 + 3*y3 + G1(y2) + 2*G1(y3) + 3*y3*G1(y3) ; 
-    J(map) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ; 
-    J(nil) = 3 ; 
-    J(true) = 3 
-
-  ]
-
-(**
-
-  [[factimes(_x0, facplus(_x1, _x2))]] = 6 + 2*x1 + 2*x2 + 4*x0 + x0*x1 + x0*x2 > 3 + 2*x0 + 2*x1 + 2*x2 + x0*x1 + x0*x2 = [[facplus(factimes(_x0, _x1), factimes(_x0, _x2))]] 
-  [[map(_F0, nil)]] = 12 + F0(0) + 9*F0(3) > 3 = [[nil]] 
-  [[map(_F0, cons(_x1, _x2))]] = 12 + 4*x2 + 16*x1 + F0(0) + 3*x2*F0(3 + x2 + 4*x1) + 9*F0(3 + x2 + 4*x1) + 12*x1*F0(3 + x2 + 4*x1) > 3 + 4*x1 + 4*x2 + F0(0) + 3*x2*F0(x2) + 4*F0(x1) = [[cons(_F0 _x1, map(_F0, _x2))]] 
-  [[filter(_F0, nil)]] = 15 + 2*F0(0) + 10*F0(3) > 3 = [[nil]] 
-  [[filter(_F0, cons(_x1, _x2))]] = 15 + 4*x2 + 16*x1 + 2*F0(0) + 3*x2*F0(3 + x2 + 4*x1) + 10*F0(3 + x2 + 4*x1) + 12*x1*F0(3 + x2 + 4*x1) > 3 + 4*x2 + 8*x1 + F0(0) + 2*F0(x2) + 3*x2*F0(x2) + 5*F0(x1) = [[filter2(_F0 _x1, _F0, _x1, _x2)]] 
-  [[filter2(true, _F0, _x1, _x2)]] = 15 + 4*x1 + 4*x2 + F0(0) + F0(x1) + 2*F0(x2) + 3*x2*F0(x2) > 6 + 4*x1 + 4*x2 + F0(x2) + 2*F0(0) + 3*x2*F0(x2) = [[cons(_x1, filter(_F0, _x2))]] 
-  [[filter2(false, _F0, _x1, _x2)]] = 15 + 4*x1 + 4*x2 + F0(0) + F0(x1) + 2*F0(x2) + 3*x2*F0(x2) > 3 + 4*x2 + F0(x2) + 2*F0(0) + 3*x2*F0(x2) = [[filter(_F0, _x2)]] 
-
-**)
+Interpretation: [
+  J(facplus) = Lam[y0;y1].3 ;
+  J(factimes) = Lam[y0;y1].y1 + y0*y1 ;
+  J(cons) = Lam[y0;y1].2 + 3*y0 ;
+  J(false) = 3 ;
+  J(filter) = Lam[G0;y1].3*y1 + G0(0) + G0(y1) + 3*y1*G0(y1) ;
+  J(filter2) = Lam[y0;G1;y2;y3].2 + 3*y2 + 3*y3 + G1(y3) + 2*G1(y2) + 3*y3*G1(y3) + 3*G1(0) ;
+  J(map) = Lam[G0;y1].3*y1 + 2*y1*G0(y1) + 3*G0(y1) ;
+  J(nil) = 3 ;
+  J(true) = 3
+]
 
 Removed: [
-
-  factimes(X, facplus(Y, Z)) => facplus(factimes(X, Y), factimes(X, Z)) ; 
-  map(F, nil) => nil ; 
-  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
-  filter(F, nil) => nil ; 
-  filter(F, cons(X, Y)) => filter2(F X, F, X, Y) ; 
-  filter2(true, F, X, Y) => cons(X, filter(F, Y)) ; 
-  filter2(false, F, X, Y) => filter(F, Y) 
-
+  factimes X (facplus Y Z) => facplus (factimes X Y) (factimes X Z) ;
+  map F nil => nil ;
+  map G (cons U V) => cons (G U) (map G V) ;
+  filter H nil => nil ;
+  filter I (cons W Q) => filter2 (I W) I W Q ;
+  filter2 true J R S => cons R (filter J S) ;
+  filter2 false K T X => filter K X
 ]
 

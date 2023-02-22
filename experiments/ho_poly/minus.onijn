@@ -1,48 +1,27 @@
 YES
-  Signature: [
+Signature: [ 
+  minus : N -> N -> N ;
+  s : N -> N ;
+  z : N
+]
 
-    mINus : [N * N] --> N ; 
-    s : [N] --> N ; 
-    z : [] --> N 
+Rules: [
+  minus z X => z ;
+  minus Y z => Y ;
+  minus (s Z) (s U) => minus Z U ;
+  minus V V => z
+]
 
-  ]
-
-  Rules: [
-
-    mINus(z, x) => z ; 
-    mINus(x, z) => x ; 
-    mINus(s(x), s(y)) => mINus(x, y) ; 
-    mINus(x, x) => z 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(mINus) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(s) = Lam[y0].3 + 3*y0 ; 
-    J(z) = 2 
-
-  ]
-
-(**
-
-  [[mINus(z, _x0)]] = 11 + 10*x0 > 2 = [[z]] 
-  [[mINus(_x0, z)]] = 11 + 10*x0 > x0 = [[_x0]] 
-  [[mINus(s(_x0), s(_x1))]] = 54 + 48*x0*x1 + 52*x0 + 52*x1 > 3 + 3*x0*x1 + 4*x0 + 4*x1 = [[mINus(_x0, _x1)]] 
-  [[mINus(_x0, _x0)]] = 3 + 3*x0*x0 + 8*x0 > 2 = [[z]] 
-
-**)
+Interpretation: [
+  J(minus) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(s) = Lam[y0].3 + 3*y0 ;
+  J(z) = 0 
+]
 
 Removed: [
-
-  mINus(z, X) => z ; 
-  mINus(X, z) => X ; 
-  mINus(s(X), s(Y)) => mINus(X, Y) ; 
-  mINus(X, X) => z 
-
+  minus z X => z ;
+  minus Y z => Y ;
+  minus (s Z) (s U) => minus Z U ;
+  minus V V => z
 ]
 

@@ -1,106 +1,71 @@
 YES
-  Signature: [
+Signature: [
+  fact3220 : a -> a -> a ;
+  facdiv : a -> a -> a ;
+  facdot : a -> a -> a ;
+  cons : c -> d -> d ;
+  e : a ;
+  false : b ;
+  filter : (c -> b) -> d -> d ;
+  filter2 : b -> (c -> b) -> c -> d -> d ;
+  map : (c -> c) -> d -> d ;
+  nil : d ;
+  tt : b
+]
 
-    fac3220 : [a * a] --> a ; 
-    facdiv : [a * a] --> a ; 
-    facdot : [a * a] --> a ; 
-    cons : [c * d] --> d ; 
-    e : [] --> a ; 
-    false : [] --> b ; 
-    filter : [c -> b * d] --> d ; 
-    filter2 : [b * c -> b * c * d] --> d ; 
-    map : [c -> c * d] --> d ; 
-    nil : [] --> d ; 
-    true : [] --> b 
+Rules: [
+  fact3220 X X => e ;
+  fact3220 e Y => Y ;
+  fact3220 Z (facdot Z U) => U ;
+  fact3220 (facdiv V W) V => W ;
+  facdiv Q Q => e ;
+  facdiv R e => R ;
+  facdiv (facdot S T) T => S ;
+  facdiv X (fact3220 Y X) => Y ;
+  facdot e Z => Z ;
+  facdot U e => U ;
+  facdot V (fact3220 V W) => W ;
+  facdot (facdiv Q R) R => Q ;
+  map F nil => nil ;
+  map G (cons S T) => cons (G S) (map G T) ;
+  filter H nil => nil ;
+  filter I (cons X Y) => filter2 (I X) I X Y ;
+  filter2 tt J Z U => cons Z (filter J U) ;
+  filter2 false K V W => filter K W
+]
 
-  ]
-
-  Rules: [
-
-    fac3220(x, x) => e ; 
-    fac3220(e, x) => x ; 
-    fac3220(x, facdot(x, y)) => y ; 
-    fac3220(facdiv(x, y), x) => y ; 
-    facdiv(x, x) => e ; 
-    facdiv(x, e) => x ; 
-    facdiv(facdot(x, y), y) => x ; 
-    facdiv(x, fac3220(y, x)) => y ; 
-    facdot(e, x) => x ; 
-    facdot(x, e) => x ; 
-    facdot(x, fac3220(x, y)) => y ; 
-    facdot(facdiv(x, y), y) => x ; 
-    map(f, nil) => nil ; 
-    map(f, cons(x, y)) => cons(f x, map(f, y)) ; 
-    filter(f, nil) => nil ; 
-    filter(f, cons(x, y)) => filter2(f x, f, x, y) ; 
-    filter2(true, f, x, y) => cons(x, filter(f, y)) ; 
-    filter2(false, f, x, y) => filter(f, y) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(fac3220) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(facdiv) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(facdot) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(cons) = Lam[y0;y1].3 + 3*y0 ; 
-    J(e) = 0 ; 
-    J(false) = 3 ; 
-    J(filter) = Lam[G0;y1].1 + 3*y1 + 2*G0(0) + 2*G0(y1) + 3*y1*G0(y1) ; 
-    J(filter2) = Lam[y0;G1;y2;y3].3 + 3*y2 + 3*y3 + 2*G1(0) + 3*y3*G1(y3) + 3*G1(y2) + 3*G1(y3) ; 
-    J(map) = Lam[G0;y1].3*y1 + G0(y1) + 3*y1*G0(y1) ; 
-    J(nil) = 3 ; 
-    J(true) = 3 
-
-  ]
-
-(**
-
-  [[fac3220(_x0, _x0)]] = 3 + 3*x0*x0 + 8*x0 > 0 = [[e]] 
-  [[fac3220(e, _x0)]] = 3 + 4*x0 > x0 = [[_x0]] 
-  [[fac3220(_x0, facdot(_x0, _x1))]] = 15 + 9*x0*x0*x1 + 12*x0*x0 + 16*x1 + 24*x0*x1 + 29*x0 > x1 = [[_x1]] 
-  [[fac3220(facdiv(_x0, _x1), _x0)]] = 15 + 9*x0*x0*x1 + 12*x0*x0 + 16*x1 + 24*x0*x1 + 29*x0 > x1 = [[_x1]] 
-  [[facdiv(_x0, _x0)]] = 3 + 3*x0*x0 + 8*x0 > 0 = [[e]] 
-  [[facdiv(_x0, e)]] = 3 + 4*x0 > x0 = [[_x0]] 
-  [[facdiv(facdot(_x0, _x1), _x1)]] = 15 + 9*x0*x1*x1 + 12*x1*x1 + 16*x0 + 24*x0*x1 + 29*x1 > x0 = [[_x0]] 
-  [[facdiv(_x0, fac3220(_x1, _x0))]] = 15 + 9*x0*x0*x1 + 12*x0*x0 + 16*x1 + 24*x0*x1 + 29*x0 > x1 = [[_x1]] 
-  [[facdot(e, _x0)]] = 3 + 4*x0 > x0 = [[_x0]] 
-  [[facdot(_x0, e)]] = 3 + 4*x0 > x0 = [[_x0]] 
-  [[facdot(_x0, fac3220(_x0, _x1))]] = 15 + 9*x0*x0*x1 + 12*x0*x0 + 16*x1 + 24*x0*x1 + 29*x0 > x1 = [[_x1]] 
-  [[facdot(facdiv(_x0, _x1), _x1)]] = 15 + 9*x0*x1*x1 + 12*x1*x1 + 16*x0 + 24*x0*x1 + 29*x1 > x0 = [[_x0]] 
-  [[map(_F0, nil)]] = 12 + F0(0) + 10*F0(3) > 3 = [[nil]] 
-  [[map(_F0, cons(_x1, _x2))]] = 12 + 4*x2 + 16*x1 + F0(0) + 3*x2*F0(3 + x2 + 4*x1) + 10*F0(3 + x2 + 4*x1) + 12*x1*F0(3 + x2 + 4*x1) > 3 + 4*x1 + 4*x2 + F0(0) + F0(x2) + 3*x2*F0(x2) + 4*F0(x1) = [[cons(_F0 _x1, map(_F0, _x2))]] 
-  [[filter(_F0, nil)]] = 13 + 3*F0(0) + 11*F0(3) > 3 = [[nil]] 
-  [[filter(_F0, cons(_x1, _x2))]] = 13 + 4*x2 + 16*x1 + 3*x2*F0(3 + x2 + 4*x1) + 3*F0(0) + 11*F0(3 + x2 + 4*x1) + 12*x1*F0(3 + x2 + 4*x1) > 3 + 4*x2 + 5*x1 + 3*x2*F0(x2) + 3*F0(0) + 3*F0(x2) + 4*F0(x1) = [[filter2(_F0 _x1, _F0, _x1, _x2)]] 
-  [[filter2(true, _F0, _x1, _x2)]] = 6 + 4*x1 + 4*x2 + 3*x2*F0(x2) + 3*F0(0) + 3*F0(x1) + 3*F0(x2) > 4 + 4*x1 + 4*x2 + 2*F0(x2) + 3*x2*F0(x2) + 3*F0(0) = [[cons(_x1, filter(_F0, _x2))]] 
-  [[filter2(false, _F0, _x1, _x2)]] = 6 + 4*x1 + 4*x2 + 3*x2*F0(x2) + 3*F0(0) + 3*F0(x1) + 3*F0(x2) > 1 + 4*x2 + 2*F0(x2) + 3*x2*F0(x2) + 3*F0(0) = [[filter(_F0, _x2)]] 
-
-**)
+Interpretation: [
+  J(fact3220) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(facdiv) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(facdot) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(cons) = Lam[y0;y1].3 + 3*y0 ;
+  J(e) = 2 ;
+  J(false) = 3 ;
+  J(filter) = Lam[G0;y1].3*y1 + 2*G0(y1) + 3*y1*G0(y1) + 3*G0(0) ;
+  J(filter2) = Lam[y0;G1;y2;y3].2 + 3*y2 + 3*y3 + 3*y3*G1(y3) + 3*G1(0) + 3*G1(y2) + 3*G1(y3) ;
+  J(map) = Lam[G0;y1].3*y1 + 2*G0(y1) + 3*y1*G0(y1) ;
+  J(nil) = 3 ;
+  J(tt) = 3
+]
 
 Removed: [
-
-  fac3220(X, X) => e ; 
-  fac3220(e, X) => X ; 
-  fac3220(X, facdot(X, Y)) => Y ; 
-  fac3220(facdiv(X, Y), X) => Y ; 
-  facdiv(X, X) => e ; 
-  facdiv(X, e) => X ; 
-  facdiv(facdot(X, Y), Y) => X ; 
-  facdiv(X, fac3220(Y, X)) => Y ; 
-  facdot(e, X) => X ; 
-  facdot(X, e) => X ; 
-  facdot(X, fac3220(X, Y)) => Y ; 
-  facdot(facdiv(X, Y), Y) => X ; 
-  map(F, nil) => nil ; 
-  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
-  filter(F, nil) => nil ; 
-  filter(F, cons(X, Y)) => filter2(F X, F, X, Y) ; 
-  filter2(true, F, X, Y) => cons(X, filter(F, Y)) ; 
-  filter2(false, F, X, Y) => filter(F, Y) 
-
+  fact3220 X X => e ;
+  fact3220 e Y => Y ;
+  fact3220 Z (facdot Z U) => U ;
+  fact3220 (facdiv V W) V => W ;
+  facdiv Q Q => e ;
+  facdiv R e => R ;
+  facdiv (facdot S T) T => S ;
+  facdiv X (fact3220 Y X) => Y ;
+  facdot e Z => Z ;
+  facdot U e => U ;
+  facdot V (fact3220 V W) => W ;
+  facdot (facdiv Q R) R => Q ;
+  map F nil => nil ;
+  map G (cons S T) => cons (G S) (map G T) ;
+  filter H nil => nil ;
+  filter I (cons X Y) => filter2 (I X) I X Y ;
+  filter2 tt J Z U => cons Z (filter J U) ;
+  filter2 false K V W => filter K W
 ]
 

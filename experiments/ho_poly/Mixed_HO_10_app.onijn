@@ -1,35 +1,17 @@
 YES
-  Signature: [
+Signature: [ 
+  fapp : (a -> b) -> a -> b
+]
 
-    fapp : [a -> b * a] --> b 
+Rules: [
+  fapp F X => F X
+]
 
-  ]
-
-  Rules: [
-
-    fapp(f, x) => f x 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(fapp) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1) 
-
-  ]
-
-(**
-
-  [[fapp(_F0, _x1)]] = 1 + x1 + 3*F0(x1) + 4*F0(0) > x1 + F0(x1) = [[_F0 _x1]] 
-
-**)
+Interpretation: [
+  J(fapp) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1) 
+]
 
 Removed: [
-
-  fapp(F, X) => F X 
-
+  fapp F X => F X
 ]
 

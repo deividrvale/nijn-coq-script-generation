@@ -1,52 +1,31 @@
 YES
-  Signature: [
+Signature: [ 
+  add : a -> a -> a ;
+  curry : (a -> a -> a) -> a -> a -> a ;
+  plus : a -> a -> a ;
+  s : a -> a ;
+  zero : a
+]
 
-    add : [] --> a -> a -> a ; 
-    curry : [a -> a -> a] --> a -> a -> a ; 
-    plus : [] --> a -> a -> a ; 
-    s : [a] --> a ; 
-    zero : [] --> a 
+Rules: [
+  plus zero X => X ;
+  plus (s Y) Z => s (plus Y Z) ;
+  curry F U V => F U V ;
+  add => curry plus
+]
 
-  ]
-
-  Rules: [
-
-    plus zero x => x ; 
-    plus s(x) y => s(plus x y) ; 
-    curry(f) x y => f x y ; 
-    add => curry(plus) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(add) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(curry) = Lam[G0;y1;y2].1 + G0(0,0) + G0(y1,y1) + G0(y1,y2) ; 
-    J(plus) = Lam[y0;y1].y0 ; 
-    J(s) = Lam[y0].3 ; 
-    J(zero) = 3 
-
-  ]
-
-(**
-
-  [[plus zero _x0]] = 6 + x0 > x0 = [[_x0]] 
-  [[plus s(_x0) _x1]] = 6 + x1 + 2*x0 > 3 + x1 + 2*x0 = [[s(plus _x0 _x1)]] 
-  [[curry(_F0) _x1 _x2]] = 1 + x1 + x2 + F0(x1,x1) + F0(x1,x2) + 2*F0(0,0) > x1 + x2 + F0(x1,x2) = [[_F0 _x1 _x2]] 
-  [[add]] = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 > Lam[y0;y1].1 + 2*y0 = [[curry(plus)]] 
-
-**)
+Interpretation: [
+  J(add) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(curry) = Lam[G0;y1;y2].1 + G0(0,0) + G0(y1,y1) + G0(y1,y2) ;
+  J(plus) = Lam[y0;y1].y0 ;
+  J(s) = Lam[y0].3 ;
+  J(zero) = 3 
+]
 
 Removed: [
-
-  plus zero X => X ; 
-  plus s(X) Y => s(plus X Y) ; 
-  curry(F) X Y => F X Y ; 
-  add => curry(plus) 
-
+  plus zero X => X ;
+  plus (s Y) Z => s (plus Y Z) ;
+  curry F U V => F U V ;
+  add => curry plus
 ]
 

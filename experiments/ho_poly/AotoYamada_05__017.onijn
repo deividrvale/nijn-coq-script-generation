@@ -1,35 +1,17 @@
 YES
-  Signature: [
+Signature: [ 
+  uncurry : (a -> b -> c) -> a -> b -> c
+]
 
-    uncurry : [a -> b -> c * a * b] --> c 
+Rules: [
+  uncurry F X Y => F X Y
+]
 
-  ]
-
-  Rules: [
-
-    uncurry(f, x, y) => f x y 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(uncurry) = Lam[G0;y1;y2].2 + 3*G0(0,0) + 3*G0(y1,y1) + 3*G0(y1,y2) + 3*G0(y2,y1) + 3*G0(y2,y2) 
-
-  ]
-
-(**
-
-  [[uncurry(_F0, _x1, _x2)]] = 2 + x1 + x2 + 3*F0(x1,x1) + 3*F0(x1,x2) + 3*F0(x2,x1) + 3*F0(x2,x2) + 4*F0(0,0) > x1 + x2 + F0(x1,x2) = [[_F0 _x1 _x2]] 
-
-**)
+Interpretation: [
+  J(uncurry) = Lam[G0;y1;y2].2 + 3*G0(0,0) + 3*G0(y1,y1) + 3*G0(y1,y2) + 3*G0(y2,y1) + 3*G0(y2,y2) 
+]
 
 Removed: [
-
-  uncurry(F, X, Y) => F X Y 
-
+  uncurry F X Y => F X Y
 ]
 

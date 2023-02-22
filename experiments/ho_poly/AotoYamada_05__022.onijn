@@ -1,54 +1,33 @@
 YES
-  Signature: [
+Signature: [ 
+  cons : b -> c -> c ;
+  leaf : a -> b ;
+  mapt : (a -> a) -> b -> b ;
+  maptlist : (a -> a) -> c -> c ;
+  nil : c ;
+  node : c -> b
+]
 
-    cons : [b * c] --> c ; 
-    leaf : [a] --> b ; 
-    mapt : [a -> a * b] --> b ; 
-    maptlist : [a -> a * c] --> c ; 
-    nil : [] --> c ; 
-    node : [c] --> b 
+Rules: [
+  mapt F (leaf X) => leaf (F X) ;
+  mapt G (node Y) => node (maptlist G Y) ;
+  maptlist H nil => nil ;
+  maptlist I (cons Z U) => cons (mapt I Z) (maptlist I U)
+]
 
-  ]
-
-  Rules: [
-
-    mapt(f, leaf(x)) => leaf(f x) ; 
-    mapt(f, node(x)) => node(maptlist(f, x)) ; 
-    maptlist(f, nil) => nil ; 
-    maptlist(f, cons(x, y)) => cons(mapt(f, x), maptlist(f, y)) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(cons) = Lam[y0;y1].3 ; 
-    J(leaf) = Lam[y0].3 ; 
-    J(mapt) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ; 
-    J(maptlist) = Lam[G0;y1].3*y1 + 2*G0(y1) + 3*y1*G0(y1) ; 
-    J(nil) = 3 ; 
-    J(node) = Lam[y0].3 + y0 
-
-  ]
-
-(**
-
-  [[mapt(_F0, leaf(_x1))]] = 12 + 4*x1 + F0(0) + 3*x1*F0(3 + x1) + 9*F0(3 + x1) > 3 + x1 + F0(x1) = [[leaf(_F0 _x1)]] 
-  [[mapt(_F0, node(_x1))]] = 12 + 8*x1 + F0(0) + 6*x1*F0(3 + 2*x1) + 9*F0(3 + 2*x1) > 3 + 8*x1 + 2*F0(0) + 4*F0(x1) + 6*x1*F0(x1) = [[node(maptlist(_F0, _x1))]] 
-  [[maptlist(_F0, nil)]] = 12 + F0(0) + 11*F0(3) > 3 = [[nil]] 
-  [[maptlist(_F0, cons(_x1, _x2))]] = 12 + 4*x1 + 4*x2 + F0(0) + 3*x1*F0(3 + x1 + x2) + 3*x2*F0(3 + x1 + x2) + 11*F0(3 + x1 + x2) > 3 + 4*x1 + 4*x2 + 2*F0(0) + 2*F0(x2) + 3*x1*F0(x1) + 3*x2*F0(x2) = [[cons(mapt(_F0, _x1), maptlist(_F0, _x2))]] 
-
-**)
+Interpretation: [
+  J(cons) = Lam[y0;y1].3 ;
+  J(leaf) = Lam[y0].3 ;
+  J(mapt) = Lam[G0;y1].2 + 2*y1 + 3*y1*G0(y1) ;
+  J(maptlist) = Lam[G0;y1].2*y1 + 3*y1*G0(y1) + 3*G0(y1) ;
+  J(nil) = 3 ;
+  J(node) = Lam[y0].3 
+]
 
 Removed: [
-
-  mapt(F, leaf(X)) => leaf(F X) ; 
-  mapt(F, node(X)) => node(maptlist(F, X)) ; 
-  maptlist(F, nil) => nil ; 
-  maptlist(F, cons(X, Y)) => cons(mapt(F, X), maptlist(F, Y)) 
-
+  mapt F (leaf X) => leaf (F X) ;
+  mapt G (node Y) => node (maptlist G Y) ;
+  maptlist H nil => nil ;
+  maptlist I (cons Z U) => cons (mapt I Z) (maptlist I U)
 ]
 

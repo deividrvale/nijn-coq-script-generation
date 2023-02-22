@@ -1,92 +1,60 @@
 YES
-  Signature: [
-
-    facdot : [a * a] --> a ; 
-    cons : [c * d] --> d ; 
-    false : [] --> b ; 
-    filter : [c -> b * d] --> d ; 
-    filter2 : [b * c -> b * c * d] --> d ; 
-    i : [a] --> a ; 
-    map : [c -> c * d] --> d ; 
-    nil : [] --> d ; 
-    one : [] --> a ; 
-    true : [] --> b 
-
-  ]
-
-  Rules: [
-
-    facdot(one, x) => x ; 
-    facdot(x, one) => x ; 
-    facdot(i(x), x) => one ; 
-    facdot(x, i(x)) => one ; 
-    facdot(i(x), facdot(x, y)) => y ; 
-    facdot(x, facdot(i(x), y)) => y ; 
-    i(one) => one ; 
-    i(i(x)) => x ; 
-    map(f, nil) => nil ; 
-    map(f, cons(x, y)) => cons(f x, map(f, y)) ; 
-    filter(f, nil) => nil ; 
-    filter(f, cons(x, y)) => filter2(f x, f, x, y) ; 
-    filter2(true, f, x, y) => cons(x, filter(f, y)) ; 
-    filter2(false, f, x, y) => filter(f, y) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(facdot) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(cons) = Lam[y0;y1].3 + y0 ; 
-    J(false) = 3 ; 
-    J(filter) = Lam[G0;y1].1 + 2*y1 + 3*y1*G0(y1) + 3*G0(0) ; 
-    J(filter2) = Lam[y0;G1;y2;y3].2 + y2 + 2*y3 + G1(y2) + 3*y3*G1(y3) + 3*G1(0) + 3*G1(y3) ; 
-    J(i) = Lam[y0].3 + 3*y0 ; 
-    J(map) = Lam[G0;y1].3*y1 + 2*G0(y1) + y1*G0(y1) ; 
-    J(nil) = 3 ; 
-    J(one) = 0 ; 
-    J(true) = 3 
-
-  ]
-
-(**
-
-  [[facdot(one, _x0)]] = 3 + 4*x0 > x0 = [[_x0]] 
-  [[facdot(_x0, one)]] = 3 + 4*x0 > x0 = [[_x0]] 
-  [[facdot(i(_x0), _x0)]] = 15 + 12*x0*x0 + 29*x0 > 0 = [[one]] 
-  [[facdot(_x0, i(_x0))]] = 15 + 12*x0*x0 + 29*x0 > 0 = [[one]] 
-  [[facdot(i(_x0), facdot(_x0, _x1))]] = 54 + 36*x0*x0*x1 + 48*x0*x0 + 52*x1 + 87*x0*x1 + 104*x0 > x1 = [[_x1]] 
-  [[facdot(_x0, facdot(i(_x0), _x1))]] = 63 + 36*x0*x0*x1 + 48*x0*x0 + 52*x1 + 87*x0*x1 + 113*x0 > x1 = [[_x1]] 
-  [[i(one)]] = 3 > 0 = [[one]] 
-  [[i(i(_x0))]] = 15 + 16*x0 > x0 = [[_x0]] 
-  [[map(_F0, nil)]] = 12 + F0(0) + 5*F0(3) > 3 = [[nil]] 
-  [[map(_F0, cons(_x1, _x2))]] = 12 + 4*x2 + 8*x1 + F0(0) + 2*x1*F0(3 + x2 + 2*x1) + 5*F0(3 + x2 + 2*x1) + x2*F0(3 + x2 + 2*x1) > 3 + 2*x1 + 4*x2 + F0(0) + 2*F0(x1) + 2*F0(x2) + x2*F0(x2) = [[cons(_F0 _x1, map(_F0, _x2))]] 
-  [[filter(_F0, nil)]] = 10 + 4*F0(0) + 9*F0(3) > 3 = [[nil]] 
-  [[filter(_F0, cons(_x1, _x2))]] = 10 + 3*x2 + 6*x1 + 3*x2*F0(3 + x2 + 2*x1) + 4*F0(0) + 6*x1*F0(3 + x2 + 2*x1) + 9*F0(3 + x2 + 2*x1) > 2 + 3*x1 + 3*x2 + 2*F0(x1) + 3*x2*F0(x2) + 3*F0(x2) + 4*F0(0) = [[filter2(_F0 _x1, _F0, _x1, _x2)]] 
-  [[filter2(true, _F0, _x1, _x2)]] = 5 + 2*x1 + 3*x2 + F0(x1) + 3*x2*F0(x2) + 3*F0(x2) + 4*F0(0) > 4 + 2*x1 + 3*x2 + 3*x2*F0(x2) + 4*F0(0) = [[cons(_x1, filter(_F0, _x2))]] 
-  [[filter2(false, _F0, _x1, _x2)]] = 5 + 2*x1 + 3*x2 + F0(x1) + 3*x2*F0(x2) + 3*F0(x2) + 4*F0(0) > 1 + 3*x2 + 3*x2*F0(x2) + 4*F0(0) = [[filter(_F0, _x2)]] 
-
-**)
-
-Removed: [
-
-  facdot(one, X) => X ; 
-  facdot(X, one) => X ; 
-  facdot(i(X), X) => one ; 
-  facdot(X, i(X)) => one ; 
-  facdot(i(X), facdot(X, Y)) => Y ; 
-  facdot(X, facdot(i(X), Y)) => Y ; 
-  i(one) => one ; 
-  i(i(X)) => X ; 
-  map(F, nil) => nil ; 
-  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
-  filter(F, nil) => nil ; 
-  filter(F, cons(X, Y)) => filter2(F X, F, X, Y) ; 
-  filter2(true, F, X, Y) => cons(X, filter(F, Y)) ; 
-  filter2(false, F, X, Y) => filter(F, Y) 
-
+Signature: [
+  facdot : a -> a -> a ;
+  cons : c -> d -> d ;
+  false : b ;
+  filter : (c -> b) -> d -> d ;
+  filter2 : b -> (c -> b) -> c -> d -> d ;
+  i : a -> a ;
+  map : (c -> c) -> d -> d ;
+  nil : d ;
+  one : a ;
+  true : b
 ]
 
+Rules: [
+  facdot one X => X ;
+  facdot Y one => Y ;
+  facdot (i Z) Z => one ;
+  facdot U (i U) => one ;
+  facdot (i V) (facdot V W) => W ;
+  facdot Q (facdot (i Q) R) => R ;
+  i one => one ;
+  i (i S) => S ;
+  map F nil => nil ;
+  map G (cons T X) => cons (G T) (map G X) ;
+  filter H nil => nil ;
+  filter I (cons Y Z) => filter2 (I Y) I Y Z ;
+  filter2 true J U V => cons U (filter J V) ;
+  filter2 false K W Q => filter K Q
+]
+
+Interpretation: [
+  J(facdot) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(cons) = Lam[y0;y1].3 + 3*y0 ;
+  J(false) = 3 ;
+  J(filter) = Lam[G0;y1].3*y1 + G0(0) + 2*y1*G0(y1) + 2*G0(y1) ;
+  J(filter2) = Lam[y0;G1;y2;y3].3 + 3*y2 + 3*y3 + G1(y2) + 2*y3*G1(y3) + 3*G1(0) + 3*G1(y3) ;
+  J(i) = Lam[y0].3 + 3*y0 ;
+  J(map) = Lam[G0;y1].3*y1 + 2*G0(y1) + 3*y1*G0(y1) ;
+  J(nil) = 3 ;
+  J(one) = 0 ;
+  J(true) = 3
+]
+
+Removed: [
+  facdot one X => X ;
+  facdot Y one => Y ;
+  facdot (i Z) Z => one ;
+  facdot U (i U) => one ;
+  facdot (i V) (facdot V W) => W ;
+  facdot Q (facdot (i Q) R) => R ;
+  i one => one ;
+  i (i S) => S ;
+  map F nil => nil ;
+  map G (cons T X) => cons (G T) (map G X) ;
+  filter H nil => nil ;
+  filter I (cons Y Z) => filter2 (I Y) I Y Z ;
+  filter2 true J U V => cons U (filter J V) ;
+  filter2 false K W Q => filter K Q
+]

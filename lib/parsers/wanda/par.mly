@@ -1,6 +1,7 @@
 %{
   open File.Wanda
   open Syntax.Poly
+  open Syntax.Ty
 %}
 
 // Tokens
@@ -28,7 +29,6 @@
 %token EQ
 %token PLAM
 
-// %token J
 %token PLUS
 %token STAR
 
@@ -48,14 +48,16 @@
 
 // Types of each declaration
 %type < answer > answer
-%type < tydec > ty_dec
-%type < string * tydec > fn_dec
+// %type < tydec > ty_dec
+%type < string * fakeTy > fn_dec
 %type < signature > signature
 %type < (term_tree * term_tree) list > trs
 %type < (string * poly_fun) list > interpretation
 // debug parser, the type is abstract
 %type < 'a > debug_parser
 %type < parsed_file > file
+
+%right TARR
 
 %%
 
@@ -77,11 +79,8 @@ fake_ty:
 dom:
     LBRACE ds = separated_list(STAR, fake_ty) RBRACE {In ds}
 
-ty_dec:
-    | dom DC_ARR fake_ty { Dec ($1, Out $3) }
-
 fn_dec:
-    | STRING COLON ty_dec { ($1, $3) }
+    | STRING COLON fake_ty { ($1, $3) }
 
 signature:
     | SIG_ID COLON LBRACE arity = separated_nonempty_list(SEP, fn_dec) RBRACE { arity }
@@ -97,13 +96,14 @@ app:
   | non_app non_app { App($1,$2) }
 
 non_app:
-  | symb { $1 }
+  | symb                    { $1 }
   | LPAREN term_tree RPAREN { $2 }
-  | STRING LPAREN args = separated_nonempty_list(COMMA, term_tree) RPAREN { FApp ($1, args) }
+  // | STRING LPAREN args = separated_nonempty_list(COMMA, term_tree) RPAREN { FApp ($1, args) }
 
 symb:
   | STRING { S $1 }
 
+// Rewrite Rules
 rule:
   | term_tree RW_ARR term_tree { ($1, $3) }
 
@@ -117,8 +117,6 @@ removed:
 poly:
   | non_poly_app        { $1 }
   | poly_app            { $1 }
-//   | STRING LPAREN poly RPAREN
-//   { app (var (PolV.register_name $1)) $3 }
 
 poly_app:
   | poly_app non_poly_app { app $1 $2 }
@@ -154,4 +152,4 @@ file:
   { new_file $1 $2 $3 $4 $5 }
 
 debug_parser:
-    | file EOF { $1 }
+    | term_tree EOF { $1 }

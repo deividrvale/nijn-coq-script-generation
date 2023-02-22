@@ -1,60 +1,39 @@
 YES
-  Signature: [
+Signature: [ 
+  cons : t -> f -> f ;
+  heightf : f -> N ;
+  heightt : t -> N ;
+  leaf : t ;
+  max : N -> N -> N ;
+  nil : f ;
+  node : f -> t ;
+  s : N -> N ;
+  z : N
+]
 
-    cons : [t * f] --> f ; 
-    heightf : [f] --> N ; 
-    heightt : [t] --> N ; 
-    leaf : [] --> t ; 
-    max : [N * N] --> N ; 
-    nil : [] --> f ; 
-    node : [f] --> t ; 
-    s : [N] --> N ; 
-    z : [] --> N 
+Rules: [
+  heightf nil => z ;
+  heightf (cons X Y) => max (heightt X) (heightf Y) ;
+  heightt leaf => z ;
+  heightt (node Z) => s (heightf Z)
+]
 
-  ]
-
-  Rules: [
-
-    heightf(nil) => z ; 
-    heightf(cons(x, y)) => max(heightt(x), heightf(y)) ; 
-    heightt(leaf) => z ; 
-    heightt(node(x)) => s(heightf(x)) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(cons) = Lam[y0;y1].3 + 3*y0 + 3*y0*y1 + 3*y1 ; 
-    J(heightf) = Lam[y0].0 ; 
-    J(heightt) = Lam[y0].0 ; 
-    J(leaf) = 3 ; 
-    J(max) = Lam[y0;y1].0 ; 
-    J(nil) = 3 ; 
-    J(node) = Lam[y0].3 + 3*y0 ; 
-    J(s) = Lam[y0].0 ; 
-    J(z) = 0 
-
-  ]
-
-(**
-
-  [[heightf(nil)]] = 3 > 0 = [[z]] 
-  [[heightf(cons(_x0, _x1))]] = 3 + 3*x0*x1 + 4*x0 + 4*x1 > x0 + x1 = [[max(heightt(_x0), heightf(_x1))]] 
-  [[heightt(leaf)]] = 3 > 0 = [[z]] 
-  [[heightt(node(_x0))]] = 3 + 4*x0 > x0 = [[s(heightf(_x0))]] 
-
-**)
+Interpretation: [
+  J(cons) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
+  J(heightf) = Lam[y0].0 ;
+  J(heightt) = Lam[y0].0 ;
+  J(leaf) = 3 ;
+  J(max) = Lam[y0;y1].0 ;
+  J(nil) = 3 ;
+  J(node) = Lam[y0].3 + 3*y0 ;
+  J(s) = Lam[y0].0 ;
+  J(z) = 0 
+]
 
 Removed: [
-
-  heightf(nil) => z ; 
-  heightf(cons(X, Y)) => max(heightt(X), heightf(Y)) ; 
-  heightt(leaf) => z ; 
-  heightt(node(X)) => s(heightf(X)) 
-
+  heightf nil => z ;
+  heightf (cons X Y) => max (heightt X) (heightf Y) ;
+  heightt leaf => z ;
+  heightt (node Z) => s (heightf Z)
 ]
 

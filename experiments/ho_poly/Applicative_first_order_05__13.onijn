@@ -1,78 +1,51 @@
 YES
-  Signature: [
+Signature: [
+  facplus : a -> a -> a ;
+  factimes : a -> a -> a ;
+  cons : c -> d -> d ;
+  false : b ;
+  filter : (c -> b) -> d -> d ;
+  filter2 : b -> (c -> b) -> c -> d -> d ;
+  map : (c -> c) -> d -> d ;
+  nil : d ;
+  TRUE : b
+]
 
-    facplus : [a * a] --> a ; 
-    factimes : [a * a] --> a ; 
-    cons : [c * d] --> d ; 
-    false : [] --> b ; 
-    filter : [c -> b * d] --> d ; 
-    filter2 : [b * c -> b * c * d] --> d ; 
-    map : [c -> c * d] --> d ; 
-    nil : [] --> d ; 
-    true : [] --> b 
+Rules: [
+  factimes X (facplus Y Z) => facplus (factimes X Y) (factimes X Z) ;
+  factimes (facplus U V) W => facplus (factimes W U) (factimes W V) ;
+  factimes (factimes Q R) S => factimes Q (factimes R S) ;
+  facplus (facplus T X) Y => facplus T (facplus X Y) ;
+  map F nil => nil ;
+  map G (cons Z U) => cons (G Z) (map G U) ;
+  filter H nil => nil ;
+  filter I (cons V W) => filter2 (I V) I V W ;
+  filter2 TRUE J Q R => cons Q (filter J R) ;
+  filter2 false K S T => filter K T
+]
 
-  ]
-
-  Rules: [
-
-    factimes(x, facplus(y, z)) => facplus(factimes(x, y), factimes(x, z)) ; 
-    factimes(facplus(x, y), z) => facplus(factimes(z, x), factimes(z, y)) ; 
-    factimes(factimes(x, y), z) => factimes(x, factimes(y, z)) ; 
-    facplus(facplus(x, y), z) => facplus(x, facplus(y, z)) ; 
-    map(f, nil) => nil ; 
-    map(f, cons(x, y)) => cons(f x, map(f, y)) ; 
-    filter(f, nil) => nil ; 
-    filter(f, cons(x, y)) => filter2(f x, f, x, y) ; 
-    filter2(true, f, x, y) => cons(x, filter(f, y)) ; 
-    filter2(false, f, x, y) => filter(f, y) 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(facplus) = Lam[y0;y1].3 + y0 ; 
-    J(factimes) = Lam[y0;y1].2 + 2*y1 + 3*y0 + 3*y0*y1 ; 
-    J(cons) = Lam[y0;y1].3 + y1 ; 
-    J(false) = 3 ; 
-    J(filter) = Lam[G0;y1].1 + y1 + y1*G0(y1) ; 
-    J(filter2) = Lam[y0;G1;y2;y3].3 + 3*y3 + G1(y3) + 2*y3*G1(y3) ; 
-    J(map) = Lam[G0;y1].3*y1 + y1*G0(y1) ; 
-    J(nil) = 3 ; 
-    J(true) = 3 
-
-  ]
-
-(**
-
-  [[factimes(_x0, facplus(_x1, _x2))]] = 11 + 3*x0*x2 + 3*x2 + 6*x0*x1 + 6*x1 + 13*x0 > 9 + 3*x0*x2 + 3*x2 + 6*x0*x1 + 6*x1 + 12*x0 = [[facplus(factimes(_x0, _x1), factimes(_x0, _x2))]] 
-  [[factimes(facplus(_x0, _x1), _x2)]] = 14 + 3*x1*x2 + 4*x1 + 6*x0*x2 + 8*x0 + 12*x2 > 9 + 3*x1 + 3*x1*x2 + 6*x0 + 6*x0*x2 + 12*x2 = [[facplus(factimes(_x2, _x0), factimes(_x2, _x1))]] 
-  [[factimes(factimes(_x0, _x1), _x2)]] = 10 + 9*x0*x1*x2 + 9*x1*x2 + 9*x2 + 12*x0*x1 + 12*x0*x2 + 12*x1 + 16*x0 > 8 + 9*x0*x1*x2 + 9*x0*x2 + 9*x1*x2 + 9*x2 + 10*x0 + 12*x0*x1 + 12*x1 = [[factimes(_x0, factimes(_x1, _x2))]] 
-  [[facplus(facplus(_x0, _x1), _x2)]] = 9 + x2 + 2*x1 + 4*x0 > 6 + x2 + 2*x0 + 2*x1 = [[facplus(_x0, facplus(_x1, _x2))]] 
-  [[map(_F0, nil)]] = 12 + F0(0) + 3*F0(3) > 3 = [[nil]] 
-  [[map(_F0, cons(_x1, _x2))]] = 12 + 4*x1 + 8*x2 + F0(0) + 2*x2*F0(3 + x1 + 2*x2) + 3*F0(3 + x1 + 2*x2) + x1*F0(3 + x1 + 2*x2) > 3 + x1 + 8*x2 + F0(x1) + 2*F0(0) + 2*x2*F0(x2) = [[cons(_F0 _x1, map(_F0, _x2))]] 
-  [[filter(_F0, nil)]] = 7 + F0(0) + 3*F0(3) > 3 = [[nil]] 
-  [[filter(_F0, cons(_x1, _x2))]] = 7 + 2*x1 + 4*x2 + F0(0) + 2*x2*F0(3 + x1 + 2*x2) + 3*F0(3 + x1 + 2*x2) + x1*F0(3 + x1 + 2*x2) > 3 + 2*x1 + 4*x2 + F0(0) + F0(x1) + F0(x2) + 2*x2*F0(x2) = [[filter2(_F0 _x1, _F0, _x1, _x2)]] 
-  [[filter2(true, _F0, _x1, _x2)]] = 6 + x1 + 4*x2 + F0(0) + F0(x2) + 2*x2*F0(x2) > 5 + x1 + 4*x2 + 2*F0(0) + 2*x2*F0(x2) = [[cons(_x1, filter(_F0, _x2))]] 
-  [[filter2(false, _F0, _x1, _x2)]] = 6 + x1 + 4*x2 + F0(0) + F0(x2) + 2*x2*F0(x2) > 1 + 2*x2 + F0(0) + x2*F0(x2) = [[filter(_F0, _x2)]] 
-
-**)
+Interpretation: [
+  J(facplus) = Lam[y0;y1].3 + y0 ;
+  J(factimes) = Lam[y0;y1].2 + 2*y1 + 3*y0 + 3*y0*y1 ;
+  J(cons) = Lam[y0;y1].1 ;
+  J(false) = 3 ;
+  J(filter) = Lam[G0;y1].3 + y1 + 2*y1*G0(y1) + 3*G0(y1) ;
+  J(filter2) = Lam[y0;G1;y2;y3].3 + y3 + 2*y3*G1(y3) + 3*G1(y3) ;
+  J(map) = Lam[G0;y1].3*y1 + 2*y1*G0(y1) ;
+  J(nil) = 3 ;
+  J(TRUE) = 3
+]
 
 Removed: [
-
-  factimes(X, facplus(Y, Z)) => facplus(factimes(X, Y), factimes(X, Z)) ; 
-  factimes(facplus(X, Y), Z) => facplus(factimes(Z, X), factimes(Z, Y)) ; 
-  factimes(factimes(X, Y), Z) => factimes(X, factimes(Y, Z)) ; 
-  facplus(facplus(X, Y), Z) => facplus(X, facplus(Y, Z)) ; 
-  map(F, nil) => nil ; 
-  map(F, cons(X, Y)) => cons(F X, map(F, Y)) ; 
-  filter(F, nil) => nil ; 
-  filter(F, cons(X, Y)) => filter2(F X, F, X, Y) ; 
-  filter2(true, F, X, Y) => cons(X, filter(F, Y)) ; 
-  filter2(false, F, X, Y) => filter(F, Y) 
-
+  factimes X (facplus Y Z) => facplus (factimes X Y) (factimes X Z) ;
+  factimes (facplus U V) W => facplus (factimes W U) (factimes W V) ;
+  factimes (factimes Q R) S => factimes Q (factimes R S) ;
+  facplus (facplus T X) Y => facplus T (facplus X Y) ;
+  map F nil => nil ;
+  map G (cons Z U) => cons (G Z) (map G U) ;
+  filter H nil => nil ;
+  filter I (cons V W) => filter2 (I V) I V W ;
+  filter2 TRUE J Q R => cons Q (filter J R) ;
+  filter2 false K S T => filter K T
 ]
 

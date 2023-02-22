@@ -1,35 +1,17 @@
 YES
-  Signature: [
+Signature: [ 
+  apply : (a -> b) -> a -> b
+]
 
-    apply : [a -> b * a] --> b 
+Rules: [
+  apply F X => F X
+]
 
-  ]
-
-  Rules: [
-
-    apply(f, x) => f x 
-
-  ]
-
-(** This AFS is converted to an AFSM simply by replacINg all free variables by meta-variables (with arity 0). **) 
-
- 
-
-  Interpretation: [
-
-    J(apply) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1) 
-
-  ]
-
-(**
-
-  [[apply(_F0, _x1)]] = 1 + x1 + 3*F0(x1) + 4*F0(0) > x1 + F0(x1) = [[_F0 _x1]] 
-
-**)
+Interpretation: [
+  J(apply) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1) 
+]
 
 Removed: [
-
-  apply(F, X) => F X 
-
+  apply F X => F X
 ]
 
