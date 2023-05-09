@@ -29,5 +29,3 @@
   (menhir (>= 20220210)))
  (tags
   (coq "termination checking" "proof generation")))
-
-; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
