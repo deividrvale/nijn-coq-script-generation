@@ -17,7 +17,6 @@ let spec_list = [
   )
 ]
 
-(* The "main" function. *)
 let () =
   (* Parse user's arguments and save them in their proper reference values. *)
   Arg.parse spec_list anon_cmd usage_msg;
