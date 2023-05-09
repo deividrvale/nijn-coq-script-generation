@@ -13,8 +13,8 @@ $(CLONE_DIR) :
 	@mkdir -p $(CLONE_DIR)
 	git clone $(NIJN_REPO) $(CLONE_DIR)
 	@echo "Building Nijn Coq Library..."
-	cd $(CLONE_DIR)/Code && coq_makefile -f _CoqProject -o Makefile
-	cd $(CLONE_DIR)/Code && $(MAKE) && $(MAKE) install
+	cd $(CLONE_DIR)/src && coq_makefile -f _CoqProject -o Makefile
+	cd $(CLONE_DIR)/src && $(MAKE) && $(MAKE) install
 
 .PHONY : clean
 
