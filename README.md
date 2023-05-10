@@ -1,5 +1,9 @@
 # ONijn - Coq Proof Script Generation
 
+A persistent version of this artifact is
+available at Zenodo with the link below.
+[![DOI](https://zenodo.org/badge/566366739.svg)](https://zenodo.org/badge/latestdoi/566366739)
+
 ONijn is an OCaml module of
 [Nijn](https://github.com/nmvdw/Nijn).
 It is intended to be used as a tool to generate Coq termination certification
