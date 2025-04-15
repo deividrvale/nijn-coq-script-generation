@@ -27,10 +27,10 @@ let sort_to_cnstr (s : sort) =
   String.concat "" ["C"; sort_to_string s]
 
 let sort_def_stm (sort_dec : sort_dec) =
+  let open String in
+  let ss = List.map (fun s -> (sort_to_cnstr s, empty, empty)) sort_dec in
   let def_body =
-    ident_vbar String.empty (List.map (fun s ->
-      (sort_to_cnstr s, String.empty, String.empty)) sort_dec
-    )
+    vbar empty ss
   in
   cmd_def Inductive "base_types" def_body
 
@@ -51,7 +51,7 @@ let fn_to_ctrs f =
 
 let fn_def_stm fn_dec =
   let def_body =
-  ident_vbar String.empty (
+    vbar String.empty (
     List.map (fun s -> (fn_to_ctrs s, "", "")) fn_dec
   )
   in
@@ -59,7 +59,7 @@ let fn_def_stm fn_dec =
 
 let arity_def_stm fn_list =
   let match_body =
-    ident_vbar "  " (
+    vbar "  " (
       List.map (fun s ->
         (fn_to_ctrs s, " => ", ty_to_string (arity s))) fn_list
     )
@@ -183,7 +183,7 @@ let poly_to_stm poly_fun =
 
 (*  *)
 let poly_match_body (itp : (fn * poly_fun) list) =
-    ident_vbar ""
+    vbar ""
       (List.map (fun (f,p) -> (fn_to_ctrs f, " => \n", poly_to_stm p)) itp )
 
 (*  *)

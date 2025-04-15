@@ -20,19 +20,24 @@ type keyword =
 (** The [keyword] type enumerates the keywords we support. *)
 
 val keyword_to_string : keyword -> string
-(** [keyword_to_string k] is the written representation
-    of [k] as in Coq syntax. *)
+(** [keyword_to_string k] is the written representation of [k] as in Coq syntax. *)
 
 (** {1 Grammar Constructions} *)
 
-val ident_vbar : string -> (string * string * string) list -> string
-(** [ident_vbar idt cs ] returns a string in the grammar:
+val vbar : string -> (string * string * string) list -> string
+(**
+[ident_vbar idt cs ] returns a string of the form:
 
-    {b [idt] | <lhs_0> <token> <rhs_0> ... [idt] | <lhs_n> <token> <rhs_n>},
+{b [idt] | <lhs_0> <token> <rhs_0>}
 
-    where [idt] is the identation string and
-    the {b <lhs_i> <token> <rhs_i> } are in [cs].
- *)
+{b ... }
+
+{b [idt] | <lhs_n> <token> <rhs_n> }
+
+where [idt] is the identation string intended to be
+an string with only spaces in it
+and [<lhs_i> <token> <rhs_i>] are in [cs].
+*)
 
 val cmd_def : keyword -> string -> string -> string
 (** [cmd_def keyword ident body] returns a string in the grammar:
