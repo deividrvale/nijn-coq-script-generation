@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   minus : N -> N -> N ;
   s : N -> N ;
   z : N
@@ -15,13 +15,5 @@ Rules: [
 Interpretation: [
   J(minus) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(s) = Lam[y0].3 + 3*y0 ;
-  J(z) = 0 
+  J(z) = 0
 ]
-
-Removed: [
-  minus z X => z ;
-  minus Y z => Y ;
-  minus (s Z) (s U) => minus Z U ;
-  minus V V => z
-]
-

@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   cons : a -> c -> c ;
   consif : b -> a -> c -> c ;
   false : b ;
@@ -21,13 +21,5 @@ Interpretation: [
   J(false) = 3 ;
   J(filter) = Lam[G0;y1].3 + 3*y1 + 3*y1*G0(y1) + 3*G0(y1) ;
   J(nil) = 3 ;
-  J(true) = 3 
+  J(true) = 3
 ]
-
-Removed: [
-  consif true X Y => cons X Y ;
-  consif false Z U => U ;
-  filter F nil => nil ;
-  filter G (cons V W) => consif (G V) V (filter G W)
-]
-

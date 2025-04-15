@@ -139,15 +139,14 @@ type parsed_file = {
   sign : signature;
   afs : trs;
   itp : (string * Poly.poly_fun) list;
-  rmd : trs
 }
 
-let new_file ans arity afs itp rmd = {
+let new_file ans arity afs itp = {
   ans = ans;
   sign = arity;
   afs = afs;
-  itp = itp;
-  rmd = rmd
+  itp = itp
+  (* rmd = rmd *)
 }
 
 (*-----------------------------------------------------------------------------

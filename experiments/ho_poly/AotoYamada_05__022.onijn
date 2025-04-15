@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   cons : b -> c -> c ;
   leaf : a -> b ;
   mapt : (a -> a) -> b -> b ;
@@ -21,13 +21,5 @@ Interpretation: [
   J(mapt) = Lam[G0;y1].2 + 2*y1 + 3*y1*G0(y1) ;
   J(maptlist) = Lam[G0;y1].2*y1 + 3*y1*G0(y1) + 3*G0(y1) ;
   J(nil) = 3 ;
-  J(node) = Lam[y0].3 
+  J(node) = Lam[y0].3
 ]
-
-Removed: [
-  mapt F (leaf X) => leaf (F X) ;
-  mapt G (node Y) => node (maptlist G Y) ;
-  maptlist H nil => nil ;
-  maptlist I (cons Z U) => cons (mapt I Z) (maptlist I U)
-]
-

@@ -35,14 +35,3 @@ Interpretation: [
   J(true) = 0 ;
   J(zero) = 3
 ]
-
-Removed: [
-  lt (s X) (s Y) => lt X Y ;
-  lt zero (s Z) => true ;
-  lt U zero => false ;
-  eq V V => true ;
-  eq (s W) zero => false ;
-  eq zero (s Q) => false ;
-  member R null => false ;
-  member S (fork T X Y) => IF (lt S X) (member S T) (IF (eq S X) true (member S Y))
-]

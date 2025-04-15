@@ -39,14 +39,3 @@ Interpretation: [
   J(true) = 0 ;
   J(zero) = 0
 ]
-
-Removed: [
-  map F nil => nil ;
-  map G (cons X Y) => cons (G X) (map G Y) ;
-  le zero Z => true ;
-  le (s U) zero => false ;
-  le (s V) (s W) => le V W ;
-  maxlist Q (cons R S) => IF (le Q R) (maxlist R S) ;
-  maxlist T nil => T ;
-  height (node X Y) => s (maxlist zero (map height Y))
-]

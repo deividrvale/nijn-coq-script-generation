@@ -21,10 +21,3 @@ Interpretation: [
   J(z) = 3 ;
   J(AP1) = Lam[G0;y1].3 + 3*G0(0) + 3*G0(y1)
 ]
-
-Removed: [
-  plus z X => X ;
-  plus (s Y) Z => s (plus Y Z) ;
-  plus (lim (/\x.AP1 F x)) U => lim (/\y.plus (AP1 F y) U) ;
-  AP1 G V => G V
-]

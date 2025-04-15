@@ -37,16 +37,3 @@ Interpretation: [
   J(true) = 0 ;
   J(zero) = 3
 ]
-
-Removed: [
-  nul zero => true ;
-  nul (s X) => false ;
-  nul err => false ;
-  pred zero => err ;
-  pred (s Y) => Y ;
-  id Z => Z ;
-  eq zero => nul ;
-  eq (s U) => /\x.eq U (pred x) ;
-  add zero => id ;
-  add (s V) => /\y.add V (s y)
-]

@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   bool : nat -> boolean ;
   cons : nat -> list -> list ;
   consif : boolean -> nat -> list -> list ;
@@ -33,17 +33,5 @@ Interpretation: [
   J(rand) = Lam[y0].3 + 3*y0 ;
   J(s) = Lam[y0].3 + 3*y0 ;
   J(true) = 1 ;
-  J(zero) = 3 
+  J(zero) = 3
 ]
-
-Removed: [
-  rand X => X ;
-  rand (s Y) => rand Y ;
-  bool zero => false ;
-  bool (s zero) => true ;
-  filter F nil => nil ;
-  filter G (cons Z U) => consif (G Z) Z (filter G U) ;
-  consif true V W => cons V W ;
-  consif false Q R => R
-]
-

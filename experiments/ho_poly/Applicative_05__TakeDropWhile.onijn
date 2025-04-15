@@ -25,12 +25,3 @@ Interpretation: [
   J(takeWhile) = Lam[G0;y1].2*y1 + 2*y1*G0(y1) ;
   J(true) = 3
 ]
-
-Removed: [
-  IF true X Y => X ;
-  IF true Z U => U ;
-  takeWhile F nil => nil ;
-  takeWhile G (cons V W) => IF (G V) (cons V (takeWhile G W)) nil ;
-  dropWhile H nil => nil ;
-  dropWhile I (cons Q R) => IF (I Q) (dropWhile I R) (cons Q R)
-]

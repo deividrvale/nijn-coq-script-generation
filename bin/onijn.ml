@@ -9,7 +9,7 @@ See below the list of possible calls to onijn.
 "
 
 let version_msg =
-"The onijn proof trace compiler, version 1.0.0\n
+"DEV! The onijn proof trace compiler, version 1.0.0\n
 This version was used in the paper \"Certifying Higher-Order Polynomial Interpretations\",
 by Niels van der Weide, Deivid Vale, and Cynthia Kop.
 "

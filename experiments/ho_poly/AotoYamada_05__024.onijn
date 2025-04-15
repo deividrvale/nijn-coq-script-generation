@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   cons : a -> b -> b ;
   map : (a -> a) -> b -> b ;
   nil : b
@@ -13,11 +13,5 @@ Rules: [
 Interpretation: [
   J(cons) = Lam[y0;y1].3 + 2*y1 ;
   J(map) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ;
-  J(nil) = 3 
+  J(nil) = 3
 ]
-
-Removed: [
-  map F nil => nil ;
-  map G (cons X Y) => cons (G X) (map G Y)
-]
-

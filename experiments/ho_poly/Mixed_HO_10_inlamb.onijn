@@ -17,8 +17,3 @@ Interpretation: [
   J(c) = 0 ;
   J(f) = Lam[G0].3*G0(0)
 ]
-
-Removed: [
-  f (/\x.a) => b ;
-  b => f (/\y.c)
-]

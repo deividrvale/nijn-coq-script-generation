@@ -14,9 +14,9 @@ doc:
 bug-reports:
   "https://github.com/deividrvale/nijn-coq-script-generation/issues"
 depends: [
-  "ocaml" {>= "4.14.0"}
-  "dune" {>= "3.5" & >= "3.6.1"}
-  "menhir" {>= "20220210"}
+  "ocaml" {>= "5.3.0"}
+  "dune" {>= "3.18" & >= "3.18.0"}
+  "menhir" {>= "20240715"}
   "odoc" {with-doc}
 ]
 build: [
@@ -34,3 +34,4 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/deividrvale/nijn-coq-script-generation.git"
+x-maintenance-intent: ["(latest)"]

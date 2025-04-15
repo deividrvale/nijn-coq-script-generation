@@ -35,19 +35,3 @@ Interpretation: [
   J(or) = Lam[y0;y1].0 ;
   J(true) = 3
 ]
-
-Removed: [
-  and true true => true ;
-  and true false => false ;
-  and false true => false ;
-  and false false => false ;
-  or true true => true ;
-  or true false => true ;
-  or false true => true ;
-  or false false => false ;
-  FORALL F nil => true ;
-  FORALL G (cons X Y) => and (G X) (FORALL G Y) ;
-  forsome H nil => false ;
-  forsome I (cons Z U) => or (I Z) (forsome I U)
-]
-

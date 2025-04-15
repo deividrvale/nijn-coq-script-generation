@@ -41,16 +41,3 @@ Interpretation: [
   J(true) = 3 ;
   J(zero) = 3
 ]
-
-Removed: [
-  f (cons nil X) => X ;
-  f (cons (f (cons nil Y)) Z) => copy n Y Z ;
-  copy zero U V => f V ;
-  copy (s W) Q R => copy W Q (cons (f Q) R) ;
-  map F nil => nil ;
-  map G (cons S T) => cons (G S) (map G T) ;
-  filter H nil => nil ;
-  filter I (cons X Y) => filter2 (I X) I X Y ;
-  filter2 true J Z U => cons Z (filter J U) ;
-  filter2 false K V W => filter K W
-]

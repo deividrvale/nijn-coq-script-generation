@@ -27,16 +27,3 @@ Interpretation: [
   J(times) = Lam[y0;y1].1 + 2*y0*y1 + 3*y0 ;
   J(AP1) = Lam[G0;y1].1 + 3*y1 + G0(0) + G0(y1) + 3*y1*G0(y1)
 ]
-
-Removed: [
-  plus X X => X ;
-  times (plus Y Z) U => plus (times Y U) (times Z U) ;
-  times (times V W) Q => times V (times W Q) ;
-  plus R delta => R ;
-  times delta S => delta ;
-  sigma (/\x.T) => T ;
-  plus (sigma (/\y.AP1 F y)) (AP1 F X) => sigma (/\z.AP1 F z) ;
-  sigma (/\u.plus (AP1 G u) (AP1 H u)) => plus (sigma (/\v.AP1 G v)) (sigma (/\w.AP1 H w)) ;
-  times (sigma (/\x.AP1 I x)) Y => sigma (/\y.times (AP1 I y) Y) ;
-  AP1 J Z => J Z
-]

@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   cons : t -> f -> f ;
   heightf : f -> N ;
   heightt : t -> N ;
@@ -27,13 +27,5 @@ Interpretation: [
   J(nil) = 3 ;
   J(node) = Lam[y0].3 + 3*y0 ;
   J(s) = Lam[y0].0 ;
-  J(z) = 0 
+  J(z) = 0
 ]
-
-Removed: [
-  heightf nil => z ;
-  heightf (cons X Y) => max (heightt X) (heightf Y) ;
-  heightt leaf => z ;
-  heightt (node Z) => s (heightf Z)
-]
-

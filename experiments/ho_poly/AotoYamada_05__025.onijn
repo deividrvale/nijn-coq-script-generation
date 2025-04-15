@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   apply : (a -> b) -> a -> b
 ]
 
@@ -8,10 +8,5 @@ Rules: [
 ]
 
 Interpretation: [
-  J(apply) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1) 
+  J(apply) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1)
 ]
-
-Removed: [
-  apply F X => F X
-]
-

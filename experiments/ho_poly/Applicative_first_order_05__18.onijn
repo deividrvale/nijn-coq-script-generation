@@ -32,14 +32,3 @@ Interpretation: [
   J(nil) = 3 ;
   J(true) = 3
 ]
-
-Removed: [
-  factimes X (facplus Y Z) => facplus (factimes X Y) (factimes X Z) ;
-  map F nil => nil ;
-  map G (cons U V) => cons (G U) (map G V) ;
-  filter H nil => nil ;
-  filter I (cons W Q) => filter2 (I W) I W Q ;
-  filter2 true J R S => cons R (filter J S) ;
-  filter2 false K T X => filter K X
-]
-

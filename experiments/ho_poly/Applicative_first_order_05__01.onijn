@@ -47,25 +47,3 @@ Interpretation: [
   J(nil) = 3 ;
   J(tt) = 3
 ]
-
-Removed: [
-  fact3220 X X => e ;
-  fact3220 e Y => Y ;
-  fact3220 Z (facdot Z U) => U ;
-  fact3220 (facdiv V W) V => W ;
-  facdiv Q Q => e ;
-  facdiv R e => R ;
-  facdiv (facdot S T) T => S ;
-  facdiv X (fact3220 Y X) => Y ;
-  facdot e Z => Z ;
-  facdot U e => U ;
-  facdot V (fact3220 V W) => W ;
-  facdot (facdiv Q R) R => Q ;
-  map F nil => nil ;
-  map G (cons S T) => cons (G S) (map G T) ;
-  filter H nil => nil ;
-  filter I (cons X Y) => filter2 (I X) I X Y ;
-  filter2 tt J Z U => cons Z (filter J U) ;
-  filter2 false K V W => filter K W
-]
-

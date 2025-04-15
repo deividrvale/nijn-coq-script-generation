@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   add : a -> a -> a ;
   cons : b -> c -> c ;
   id : a -> a ;
@@ -24,14 +24,5 @@ Interpretation: [
   J(map) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ;
   J(nil) = 3 ;
   J(s) = Lam[y0].3 ;
-  J(zero) = 3 
+  J(zero) = 3
 ]
-
-Removed: [
-  id X => X ;
-  add zero => id ;
-  add (s Y) Z => s (add Y Z) ;
-  map F nil => nil ;
-  map G (cons U V) => cons (G U) (map G V)
-]
-

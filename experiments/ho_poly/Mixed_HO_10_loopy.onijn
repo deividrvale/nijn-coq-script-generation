@@ -16,9 +16,3 @@ Interpretation: [
   J(g) = Lam[y0].3 + 3*y0 ;
   J(h) = Lam[y0].3 + 2*y0
 ]
-
-Removed: [
-  f g X => h X ;
-  f F Y => F Y ;
-  h Z => f (/\x.x) Z
-]

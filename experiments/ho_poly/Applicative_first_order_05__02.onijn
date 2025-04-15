@@ -41,20 +41,3 @@ Interpretation: [
   J(one) = 0 ;
   J(true) = 3
 ]
-
-Removed: [
-  facdot one X => X ;
-  facdot Y one => Y ;
-  facdot (i Z) Z => one ;
-  facdot U (i U) => one ;
-  facdot (i V) (facdot V W) => W ;
-  facdot Q (facdot (i Q) R) => R ;
-  i one => one ;
-  i (i S) => S ;
-  map F nil => nil ;
-  map G (cons T X) => cons (G T) (map G X) ;
-  filter H nil => nil ;
-  filter I (cons Y Z) => filter2 (I Y) I Y Z ;
-  filter2 true J U V => cons U (filter J V) ;
-  filter2 false K W Q => filter K Q
-]

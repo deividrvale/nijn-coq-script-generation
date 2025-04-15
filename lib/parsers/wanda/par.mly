@@ -139,8 +139,7 @@ interpretation:
   { List.map proof_int is }
 
 file:
-  | answer signature trs interpretation removed
-  { new_file $1 $2 $3 $4 $5 }
+  | answer signature trs interpretation EOF { new_file $1 $2 $3 $4 }
 
 debug_parser:
     | term_tree EOF { $1 }

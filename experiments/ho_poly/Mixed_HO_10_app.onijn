@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   fapp : (a -> b) -> a -> b
 ]
 
@@ -8,10 +8,5 @@ Rules: [
 ]
 
 Interpretation: [
-  J(fapp) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1) 
+  J(fapp) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1)
 ]
-
-Removed: [
-  fapp F X => F X
-]
-

@@ -15,6 +15,7 @@ let lhs = fst
 let rhs = snd
 
 let equal (r : rule) (r' : rule) : bool =
+  let open Term in
   match (r, r') with
   | ((lhs, rhs), (lhs', rhs')) ->
     (term_equal lhs lhs') && (term_equal rhs rhs')

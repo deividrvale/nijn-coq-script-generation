@@ -21,12 +21,3 @@ Interpretation: [
   J(map) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ;
   J(nil) = 3
 ]
-
-Removed: [
-  append nil X => X ;
-  append (cons Y Z) U => cons Y (append Z U) ;
-  map F nil => nil ;
-  map G (cons V W) => cons (G V) (map G W) ;
-  append (append Q R) S => append Q (append R S) ;
-  map H (append T X) => append (map H T) (map H X)
-]

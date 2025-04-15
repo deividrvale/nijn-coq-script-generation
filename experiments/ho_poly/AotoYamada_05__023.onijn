@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   id : a -> a ;
   plus : a -> a -> a ;
   s : a -> a ;
@@ -16,12 +16,5 @@ Interpretation: [
   J(id) = Lam[y0].1 ;
   J(plus) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(s) = Lam[y0].3 ;
-  J(zero) = 3 
+  J(zero) = 3
 ]
-
-Removed: [
-  id X => X ;
-  plus zero => id ;
-  plus (s Y) Z => s (plus Y Z)
-]
-

@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   cons : c -> d -> d ;
   f : a -> a ;
   false : b ;
@@ -31,17 +31,5 @@ Interpretation: [
   J(g) = Lam[y0].3 + y0 ;
   J(map) = Lam[G0;y1].3*y1 + 2*G0(y1) + y1*G0(y1) ;
   J(nil) = 3 ;
-  J(true) = 3 
+  J(true) = 3
 ]
-
-Removed: [
-  f (f X) => g (f X) ;
-  g (g Y) => f Y ;
-  map F nil => nil ;
-  map G (cons Z U) => cons (G Z) (map G U) ;
-  filter H nil => nil ;
-  filter I (cons V W) => filter2 (I V) I V W ;
-  filter2 true J Q R => cons Q (filter J R) ;
-  filter2 false K S T => filter K T
-]
-

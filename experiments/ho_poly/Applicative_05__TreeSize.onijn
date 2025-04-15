@@ -1,5 +1,5 @@
 YES
-Signature: [ 
+Signature: [
   cons : c -> b -> b ;
   map : (c -> c) -> b -> b ;
   nil : b ;
@@ -29,15 +29,5 @@ Interpretation: [
   J(s) = Lam[y0].1 ;
   J(size) = Lam[y0].0 ;
   J(sum) = Lam[y0].y0 ;
-  J(zero) = 3 
+  J(zero) = 3
 ]
-
-Removed: [
-  map F nil => nil ;
-  map G (cons X Y) => cons (G X) (map G Y) ;
-  sum (cons Z U) => plus Z (sum U) ;
-  size (node V W) => s (sum (map size W)) ;
-  plus zero Q => zero ;
-  plus (s R) S => s (plus R S)
-]
-

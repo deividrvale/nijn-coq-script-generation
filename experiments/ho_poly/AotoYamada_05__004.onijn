@@ -23,10 +23,3 @@ Interpretation: [
   J(sumwith) = Lam[G0;y1].3 + 2*y1 + 2*G0(y1) + 3*y1*G0(y1) ;
   J(zero) = 3
 ]
-
-Removed: [
-  plus zero X => X ;
-  plus (s Y) Z => s (plus Y Z) ;
-  sumwith F nil => nil ;
-  sumwith G (cons U V) => plus (G U) (sumwith G V)
-]

@@ -1,6 +1,6 @@
-(lang dune 3.5)
+(lang dune 3.18)
 
-(using menhir 2.1)
+(using menhir 3.0)
 
 (name onijn)
 
@@ -24,8 +24,8 @@
  (synopsis "Coq script genaration from proof trace.")
  (description "OCaml module of Nijn to generate coq scripts for checking termination proofs of higher-order rewriting systems.")
  (depends
-  (ocaml  (>= 4.14.0))
-  (dune   (>= 3.6.1))
-  (menhir (>= 20220210)))
+  (ocaml  (>= 5.3.0))
+  (dune   (>= 3.18.0))
+  (menhir (>= 20240715)))
  (tags
   (coq "termination checking" "proof generation")))
