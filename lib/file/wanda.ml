@@ -9,6 +9,12 @@ exception OutOfBoundSym of string
 (* Answer type collects the possible answers returned by Wanda. *)
 type answer = YES | NO | MAYBE
 
+type cert_opt = POLY | RREM
+
+let cert_opt_to_string = function
+  | POLY -> "Poly"
+  | RREM -> "Rule Removal"
+
 (* Type Declarations --------------------------------------------------------*)
 let answer_to_string = function
   | YES   -> "YES"
@@ -146,7 +152,6 @@ let new_file ans arity afs itp = {
   sign = arity;
   afs = afs;
   itp = itp
-  (* rmd = rmd *)
 }
 
 (*-----------------------------------------------------------------------------
@@ -177,26 +182,20 @@ let gen_proof_string (data : int_data) =
   String.concat "\n" [
     (* Imports and Scope *)
     import ["Nijn.Nijn"];
-    scope ["poly_scope"];
-    "\n";
+    scope  ["poly_scope"] ^ "\n";
     (* Sorts *)
-    sort_def_stm (sort_list ());
-    dec_eq_ty;
-    "\n";
-    sort_abrv (sort_list ());
-    "\n";
+    sort_def_stm (sort_list ()) ^ "\n";
+    dec_eq_ty ^ "\n";
+    sort_abrv (sort_list ()) ^ "\n";
     (* Function Symbols *)
     fn_def_stm (fn_list ());
     dec_eq_fn;
-    "\n";
     arity_def_stm (fn_list ());
-    fn_abrv (fn_list ());
-    "\n";
+    fn_abrv (fn_list ()) ^ "\n";
     (* Rules and Rewriting *)
     rules_def_stm data.trs;
-    afs_df_stm data.trs "trs";
-    "\n";
+    afs_df_stm data.trs "trs" ^ "\n";
     (* Interpretation and Strong Normalization *)
-    itp_def_stm data.poly_int "trs";
+    itp_def_stm data.poly_int "trs" ^ "\n";
     sn_def_stm "trs"
   ]

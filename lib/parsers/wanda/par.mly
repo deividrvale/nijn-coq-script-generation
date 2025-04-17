@@ -16,12 +16,17 @@
 %token RPAREN
 %token LBRACE
 %token RBRACE
+%token LBRAKT
+%token RBRAKT
 %token SIG_ID
 %token RMD_ID
 %token INT_ID
+%token RULE_ID
+%token POLY_ID
+%token RREM_ID
+%token CERT_ID
 %token COLON
 %token COMMA
-%token RULE_ID
 %token TLAM
 %token DOT
 %token EQ
@@ -33,7 +38,7 @@
 %token SEP
 %token EOF
 
-// Start symbol
+// Start symbols
 %start answer signature trs interpretation file debug_parser
 
 // Associativity and precedence level for the tokens.
@@ -42,26 +47,41 @@
 %right TY_ARR
 %right PLUS
 %left STAR
-// %nonassoc SEP
 
-// Types of each declaration
+// Types of each start declaration
 %type < answer > answer
 %type < string * fakeTy > fn_dec
 %type < signature > signature
 %type < (term_tree * term_tree) list > trs
+
 %type < (string * poly_fun) list > interpretation
+
+%type < (string * poly_fun) list > int_data
+%type < (int list * ((string * poly_fun) list)) list> rrem_data
+
+
+
 // debug parser, the type is abstract
 %type < 'a > debug_parser
 %type < parsed_file > file
 
 %%
 
+// Parametrized syntax definitions --------------------------------------------
+
+(** Non-empty pairs. *)
+%inline pair(X,Y):
+  | LPAREN fst = X COMMA snd = Y RPAREN { (fst, snd) }
+
+%inline neList(XS):
+  | xs = delimited(LBRACE, separated_nonempty_list(SEP, XS), RBRACE) { xs }
+
+// Syntax for file
 answer:
     | YES   { YES }
     | NO    { NO }
     | MAYBE { MAYBE }
 
-// Signature of the file
 baseT:
     | STRING { $1 }
     | LPAREN baseT RPAREN { $2 }
@@ -75,7 +95,7 @@ fn_dec:
     | STRING COLON fake_ty { ($1, $3) }
 
 signature:
-    | SIG_ID COLON LBRACE arity = separated_nonempty_list(SEP, fn_dec) RBRACE { arity }
+    | SIG_ID COLON arity = neList(fn_dec) { arity }
 
 // Terms
 term_tree:
@@ -99,12 +119,9 @@ rule:
   | term_tree RW_ARR term_tree { ($1, $3) }
 
 trs:
-  | RULE_ID COLON LBRACE rs = separated_nonempty_list(SEP, rule) RBRACE { rs }
+  | RULE_ID COLON rs = neList(rule) { rs }
 
-removed:
-  | RMD_ID COLON LBRACE rs = separated_list(SEP, rule) RBRACE
-  { rs }
-
+// Polynomials
 poly:
   | non_poly_app        { $1 }
   | poly_app            { $1 }
@@ -114,32 +131,47 @@ poly_app:
   | non_poly_app non_poly_app { app $1 $2}
 
 non_poly_app:
-  | INT     { num $1 }
+  | INT    { num $1 }
   | STRING { var (PolV.register_name $1) }
   | LPAREN poly RPAREN { $2 }
   | poly PLUS poly  { add $1 $3 }
   | poly STAR poly { mul $1 $3 }
+  (* F(x1, x2, ..., xn) *)
   | STRING LPAREN args = separated_nonempty_list(COMMA, poly) RPAREN
     { apply_poly_list (var (PolV.register_name $1)) args }
 
 fun_poly:
-  | PLAM LBRACE xs = separated_nonempty_list(SEP, STRING) RBRACE DOT p = poly
-  { let names = List.map (fun s -> PolV.register_name s ) xs in
-    poly_fun_mk names p
-  }
+  | PLAM xs = neList(STRING) DOT p = poly
+    {
+      let names = List.map (fun s -> PolV.register_name s ) xs in
+      poly_fun_mk names p
+    }
 
 fn_int:
   | STRING LPAREN f = STRING RPAREN EQ p = fun_poly
-  { l_interpret f p}
+    { l_interpret f p}
   | STRING LPAREN f = STRING RPAREN EQ p = poly
-  { c_interpret f p }
+    { c_interpret f p }
+
+int_data:
+  | is = separated_nonempty_list(SEP, fn_int) { List.map proof_int is }
+
+rrem_data:
+  | RREM_ID { [([], [])] }
 
 interpretation:
-  | INT_ID COLON LBRACE is = separated_nonempty_list(SEP, fn_int) RBRACE
-  { List.map proof_int is }
+  | INT_ID COLON LBRACE itp = int_data RBRACE { itp }
 
+cert_type:
+  | POLY_ID { POLY }
+  | RREM_ID { RREM }
+
+// certificate:
+//   | CERT_ID LPAREN  RPAREN EQ LBRAKT data =  RBRAKT { data }
+
+(** represents the parser for files *)
 file:
   | answer signature trs interpretation EOF { new_file $1 $2 $3 $4 }
 
 debug_parser:
-    | term_tree EOF { $1 }
+    | rrem_data EOF { $1 }

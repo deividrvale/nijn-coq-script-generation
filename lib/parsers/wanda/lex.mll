@@ -21,6 +21,8 @@ rule lexer = parse
   | ")"             { RPAREN }
   | "["             { LBRACE }
   | "]"             { RBRACE }
+  | "{"             { LBRAKT }
+  | "}"             { RBRAKT }
   | ":"             { COLON  }
   | "/\\"           { TLAM }
   | "."             { DOT }
@@ -35,7 +37,11 @@ rule lexer = parse
   | "+"             { PLUS }
   | "Signature"     { SIG_ID }
   | "Rules"         { RULE_ID }
+  | "Certificate"   { CERT_ID }
   | "Removed"       { RMD_ID }
+  | "Poly"          { POLY_ID }
+  | "POLY"          { POLY_ID }
+  | "RREM"          { RREM_ID }
   | "Interpretation" { INT_ID }
   | "=>"              { RW_ARR }
   | "->"              { TY_ARR }

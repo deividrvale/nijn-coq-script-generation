@@ -28,10 +28,9 @@ let sort_to_cnstr (s : sort) =
 
 let sort_def_stm (sort_dec : sort_dec) =
   let open String in
-  let ss = List.map (fun s -> (sort_to_cnstr s, empty, empty)) sort_dec in
-  let def_body =
-    vbar empty ss
-  in
+  let ss =
+    List.map (fun s -> (sort_to_cnstr s, empty, empty)) sort_dec in
+  let def_body = vbar empty ss in
   cmd_def Inductive "base_types" def_body
 
 let rec sort_abrv (sort_list : sort_dec) =
@@ -51,10 +50,7 @@ let fn_to_ctrs f =
 
 let fn_def_stm fn_dec =
   let def_body =
-    vbar String.empty (
-    List.map (fun s -> (fn_to_ctrs s, "", "")) fn_dec
-  )
-  in
+    vbar String.empty (List.map (fun s -> (fn_to_ctrs s, "", "")) fn_dec) in
   cmd_def Inductive "fun_symbols" def_body
 
 let arity_def_stm fn_list =
@@ -196,8 +192,7 @@ let itp_def_stm (itp : (fn * poly_fun) list) (name : string) =
 
 let sn_def_stm (name : string) =
   let def_proof = cmd_proof Qed "solve_poly_SN map_fun_poly."
-  in cmd_stm Definition ("trs_isSN : isSN " ^ name) ^ "\n" ^
-  def_proof
+  in cmd_stm Definition ("trs_isSN : isSN " ^ name) ^ "\n" ^ def_proof
 
 (* Decidable equality pr-----------------------------------------------------*)
 let dec_eq_ty_proof =
