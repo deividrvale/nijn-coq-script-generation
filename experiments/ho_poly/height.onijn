@@ -18,7 +18,7 @@ Rules: [
   heightt (node Z) => s (heightf Z)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(cons) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(heightf) = Lam[y0].0 ;
   J(heightt) = Lam[y0].0 ;
@@ -28,4 +28,4 @@ Interpretation: [
   J(node) = Lam[y0].3 + 3*y0 ;
   J(s) = Lam[y0].0 ;
   J(z) = 0
-]
+}

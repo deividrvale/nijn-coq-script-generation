@@ -7,6 +7,6 @@ Rules: [
   fapp F X => F X
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(fapp) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1)
-]
+}

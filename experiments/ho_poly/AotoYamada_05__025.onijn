@@ -7,6 +7,6 @@ Rules: [
   apply F X => F X
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(apply) = Lam[G0;y1].1 + 3*G0(0) + 3*G0(y1)
-]
+}

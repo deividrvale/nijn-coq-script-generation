@@ -1,3 +1,4 @@
 (library
- (name file)
+ (name rocq)
+ (public_name onijn.rocq)
  (libraries syntax certificate))

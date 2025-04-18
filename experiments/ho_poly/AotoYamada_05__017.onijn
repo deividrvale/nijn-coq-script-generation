@@ -7,6 +7,6 @@ Rules: [
   uncurry F X Y => F X Y
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(uncurry) = Lam[G0;y1;y2].2 + 3*G0(0,0) + 3*G0(y1,y1) + 3*G0(y1,y2) + 3*G0(y2,y1) + 3*G0(y2,y2)
-]
+}

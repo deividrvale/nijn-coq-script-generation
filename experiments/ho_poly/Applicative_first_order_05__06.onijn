@@ -22,7 +22,7 @@ Rules: [
   filter2 false K S T => filter K T
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(cons) = Lam[y0;y1].3 + 3*y0 ;
   J(f) = Lam[y0].3 + 2*y0 ;
   J(false) = 3 ;
@@ -32,4 +32,4 @@ Interpretation: [
   J(map) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) ;
   J(nil) = 3 ;
   J(true) = 3
-]
+}

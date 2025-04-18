@@ -53,17 +53,12 @@
 %type < string * fakeTy > fn_dec
 %type < signature > signature
 %type < (term_tree * term_tree) list > trs
-
 %type < (string * poly_fun) list > interpretation
-
-%type < (string * poly_fun) list > int_data
-%type < (int list * ((string * poly_fun) list)) list> rrem_data
-
-
-
-// debug parser, the type is abstract
-%type < 'a > debug_parser
 %type < parsed_file > file
+%type < fake_cert > certificate
+
+// debug parser, the type is abstract and defined by the debug_parser rule
+%type < 'a > debug_parser
 
 %%
 
@@ -156,8 +151,11 @@ fn_int:
 int_data:
   | is = separated_nonempty_list(SEP, fn_int) { List.map proof_int is }
 
+rr_poly:
+  | LBRACE itp = int_data RBRACE { itp }
+
 rrem_data:
-  | RREM_ID { [([], [])] }
+  | rs = separated_nonempty_list(SEP, pair(neList(INT), rr_poly)) { FRem rs }
 
 interpretation:
   | INT_ID COLON LBRACE itp = int_data RBRACE { itp }
@@ -166,12 +164,16 @@ cert_type:
   | POLY_ID { POLY }
   | RREM_ID { RREM }
 
-// certificate:
-//   | CERT_ID LPAREN  RPAREN EQ LBRAKT data =  RBRAKT { data }
+certificate:
+  | CERT_ID LPAREN POLY_ID RPAREN
+    EQ LBRAKT data = int_data RBRAKT { FPoly data }
+  | CERT_ID LPAREN RREM_ID RPAREN
+    EQ LBRAKT data = rrem_data RBRAKT { data }
+
 
 (** represents the parser for files *)
 file:
-  | answer signature trs interpretation EOF { new_file $1 $2 $3 $4 }
+  | answer signature trs certificate EOF { new_file $1 $2 $3 $4 }
 
 debug_parser:
-    | rrem_data EOF { $1 }
+    | certificate EOF { $1 }

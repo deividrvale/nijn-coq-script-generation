@@ -23,7 +23,7 @@ Rules: [
   consif false Q R => R
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(bool) = Lam[y0].3 + 3*y0 ;
   J(cons) = Lam[y0;y1].2 ;
   J(consif) = Lam[y0;y1;y2].2 + y0 ;
@@ -34,4 +34,4 @@ Interpretation: [
   J(s) = Lam[y0].3 + 3*y0 ;
   J(true) = 1 ;
   J(zero) = 3
-]
+}

@@ -1,4 +1,5 @@
 open Syntax
+open Certificate
 
 exception OutOfBoundSym of string
 
@@ -9,11 +10,7 @@ exception OutOfBoundSym of string
 (* Answer type collects the possible answers returned by Wanda. *)
 type answer = YES | NO | MAYBE
 
-type cert_opt = POLY | RREM
-
-let cert_opt_to_string = function
-  | POLY -> "Poly"
-  | RREM -> "Rule Removal"
+type cert_type = NONE | POLY | RREM
 
 (* Type Declarations --------------------------------------------------------*)
 let answer_to_string = function
@@ -61,7 +58,8 @@ let register_signature (s : signature) =
     Utils.Lists.remove_duplicates String.equal (
       StringSet.elements (
         List.fold_left StringSet.union StringSet.empty
-        (List.map (fun x -> names_of_fakeTy (snd x)) s))
+        (List.map (fun x -> names_of_fakeTy (snd x)) s)
+      )
     )
   in List.iter (fun x -> let _ = Ty.SType.sort_register x in () ) sort_names;
   (* Register function symbol names *)
@@ -140,18 +138,27 @@ let proof_int = function
 
 (* File ---------------------------------------------------------------------*)
 
+type fake_poly_data =
+  (string * Poly.poly_fun) list
+type fake_rrem_data =
+  (int list * fake_poly_data) list
+
+type fake_cert =
+  | FPoly of fake_poly_data
+  | FRem of fake_rrem_data
+
 type parsed_file = {
   ans : answer;
   sign : signature;
   afs : trs;
-  itp : (string * Poly.poly_fun) list;
+  fake_cert : fake_cert;
 }
 
-let new_file ans arity afs itp = {
+let new_file ans arity afs cert = {
   ans = ans;
   sign = arity;
   afs = afs;
-  itp = itp
+  fake_cert = cert
 }
 
 (*-----------------------------------------------------------------------------
@@ -161,41 +168,22 @@ let new_file ans arity afs itp = {
   in their respective states.
   So, the only data needed to compile the TRS to the coq script is the rules and
   the polynomial interpretation. *)
-type int_data = {
-  trs : Rule.trs;
-  poly_int : (Term.fn * Poly.poly_fun) list
-}
 
-let process_file file =
+let fake_cert_to_cert fake_cert =
+  let itp_process l = List.map
+    (fun (f,p) -> (let _ = Term.fn_register f in (); Term.get_fn f, p)) l
+  in
+  let rr_process l =
+    List.map (fun p -> (fst p, itp_process (snd p))) l
+  in
+  match fake_cert with
+  | FPoly data -> Poly (itp_process data)
+  | FRem data -> Rem (rr_process data)
+
+let process_file file : cert_data =
   (* first, we register the signature *)
   let _ = register_signature file.sign in
-  { trs = get_trs file.afs;
-    poly_int =
-    (List.map (fun (f,p) ->
-      (let _ = Term.fn_register f in (); Term.get_fn f, p)) file.itp )
+  {
+    trs = get_trs file.afs;
+    cert = fake_cert_to_cert file.fake_cert
   }
-
-let gen_proof_string (data : int_data) =
-  let open Coq.Proof_script in
-  let open Term in
-  let open Ty.SType in
-  String.concat "\n" [
-    (* Imports and Scope *)
-    import ["Nijn.Nijn"];
-    scope  ["poly_scope"] ^ "\n";
-    (* Sorts *)
-    sort_def_stm (sort_list ()) ^ "\n";
-    dec_eq_ty ^ "\n";
-    sort_abrv (sort_list ()) ^ "\n";
-    (* Function Symbols *)
-    fn_def_stm (fn_list ());
-    dec_eq_fn;
-    arity_def_stm (fn_list ());
-    fn_abrv (fn_list ()) ^ "\n";
-    (* Rules and Rewriting *)
-    rules_def_stm data.trs;
-    afs_df_stm data.trs "trs" ^ "\n";
-    (* Interpretation and Strong Normalization *)
-    itp_def_stm data.poly_int "trs" ^ "\n";
-    sn_def_stm "trs"
-  ]

@@ -1,42 +1,28 @@
-(* A certificate *)
+module Tm  = Syntax.Term
+module Pol = Syntax.Poly
+module TRS = Syntax.Rule
+
 (*
-
-YES
-
-Signature : [<list_of_symbol>]
-
-Rules : [<list_of_rules>]
-
-C = POLY | REM
-
-Certificate(C) = {
-<the certficate, for which for each C there is a different parser
-}
-
-Ideas:
-
-  - certificate for polynomial interpretations:
-  The certificate is the interpretation J.
-
-  - certificate for rule removal:
-
-    - The selector keeps the position of each rule that can be removed at each step:
-      - selector is a predicate from: int -> bool
-      that selects the rewriting rules that can be oriented.
-
-
-  It is a sequence of selectors and (polynomial interpretations)
-
-  Base type B
-  Signature F,
-
-  Rules : [r0, ...., rk]
-
-  [(selector, )]
+Reminder: this module is not the most general it can ben since
+this datatype is specialized to certificates using rule removal only with
+poly interpretations.
+For now this is not an issue since that's the only options we have in the
+formalization.
 *)
 
-type 'a certificate = EMPTY | Poly of 'a | Rem of 'a
+exception WrongData of string
 
-let t = Poly 3
+type poly_int = (Tm.fn * Pol.poly_fun) list
+type poly_rr =  (int list * poly_int ) list
 
-let t' = Rem "x"
+type certificate =
+  | EMPTY
+  | Poly of poly_int
+  | Rem  of poly_rr
+
+
+(* The data needed to build the file. *)
+type cert_data = {
+  trs  : TRS.trs ;
+  cert : certificate
+}

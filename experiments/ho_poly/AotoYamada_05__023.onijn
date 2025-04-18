@@ -12,9 +12,9 @@ Rules: [
   plus (s Y) Z => s (plus Y Z)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(id) = Lam[y0].1 ;
   J(plus) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(s) = Lam[y0].3 ;
   J(zero) = 3
-]
+}

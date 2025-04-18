@@ -11,9 +11,9 @@ Rules: [
   b => f (/\y.c)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(a) = 3 ;
   J(b) = 2 ;
   J(c) = 0 ;
   J(f) = Lam[G0].3*G0(0)
-]
+}

@@ -10,7 +10,7 @@ open Syntax.Poly
 (* List of imports ----------------------------------------------------------*)
 
 type import = string list
-type scope = string list
+type scope  = string list
 
 let import (import : import) =
   cmd_stm Require ~keyword_list:[Import] (String.concat " " import)
@@ -115,7 +115,7 @@ let rules_def_stm (afs : Syntax.Rule.trs) =
 
 (* TRS ----------------------------------------------------------------------*)
 let afs_df_stm (afs : Syntax.Rule.trs) (name : string) =
-  let rec rules_label_list = ( fun trs ->
+  let rec rules_label_list = (fun trs ->
     match trs with
     | [] -> "List.nil"
     | hd :: tl ->
@@ -128,73 +128,8 @@ let afs_df_stm (afs : Syntax.Rule.trs) (name : string) =
   "    fn_arity \n" ^
   "    (" ^ rules_label_list afs ^ ")")
 
-(* Interpretation -----------------------------------------------------------*)
+(* Decidable equality -----------------------------------------------------*)
 
-(* Helper function:
-   Integer indexes to Coq context indexes notation *)
-let rec to_ctx_idx i =
-  if i <= 0 then "Vz" else "(Vs " ^ to_ctx_idx (i - 1) ^ ")"
-
-(* Helper function:
-   Print the formal statement of a poly variable.
-   Given that polynomial interpretations are of the form
-   Lam [x0, ..., xn] . <Poly>,
-   the printing of each of of the x_i's depends whether
-   the x_i's appear in the body of <Poly>.
-   If it does, we declare it with a name, otherwise
-   we just print a Lam P.*)
-let poly_var_to_stm (v : name) occurs v_idx =
-  if occurs then
-  begin
-    "λP let " ^
-    Syntax.Poly.PolV.to_string v ^
-    " := " ^
-    "P_var " ^
-    to_ctx_idx v_idx ^
-    " in"
-  end
-  else
-    "λP"
-
-(* Helper function:
-   Print the formal declaration of each variable in
-   the polynomial function Lam [x0, ..., xn] . <poly> *)
-let poly_vars_to_stm ( f : poly_fun) =
-  let (vs, pol) = (get_names f, get_poly f) in
-  let rec poly_vars_to_stm' = (fun vs p idx ->
-    match vs with
-    | [] -> ""
-    | hd :: tl ->
-      let occurs = var_occurs p hd in
-      (poly_var_to_stm hd occurs idx) ^ "\n" ^
-      poly_vars_to_stm' tl p (idx - 1)
-  ) in poly_vars_to_stm' vs pol (List.length vs - 1)
-
-(* Helper function:
-   prints the polynomial function Lam [x0, ..., xn] . <poly>. *)
-let poly_to_stm poly_fun =
-  let pol = get_poly poly_fun in
-  (poly_vars_to_stm poly_fun) ^
-  "(" ^ "to_Poly (" ^ (to_string pol) ^ ")" ^ ")"
-
-(*  *)
-let poly_match_body (itp : (fn * poly_fun) list) =
-    vbar ""
-      (List.map (fun (f,p) -> (fn_to_ctrs f, " => \n", poly_to_stm p)) itp )
-
-(*  *)
-let itp_def_stm (itp : (fn * poly_fun) list) (name : string) =
-  let match_body = poly_match_body itp in
-  let def_body =
-  match_cmd "fn_symbols" match_body in
-  cmd_def Definition
-  ("map_fun_poly fn_symbols : poly ∙ (arity " ^ name ^ " fn_symbols)") def_body
-
-let sn_def_stm (name : string) =
-  let def_proof = cmd_proof Qed "solve_poly_SN map_fun_poly."
-  in cmd_stm Definition ("trs_isSN : isSN " ^ name) ^ "\n" ^ def_proof
-
-(* Decidable equality pr-----------------------------------------------------*)
 let dec_eq_ty_proof =
   cmd_proof Defined "decEq_finite."
 
@@ -214,3 +149,24 @@ let dec_eq_fn =
           "decEq_fun_symbols : decEq fun_symbols") ^
   "\n" ^
   dec_eq_fn_proof
+
+let trs_to_coq (data : Certificate.cert_data) =
+  let open Syntax.Term in
+  let open Syntax.Ty.SType in
+  String.concat "\n" [
+    (* Imports and Scope *)
+    import ["Nijn.Nijn"];
+    scope  ["poly_scope"] ^ "\n";
+    (* Sorts *)
+    sort_def_stm (sort_list ()) ^ "\n";
+    dec_eq_ty ^ "\n";
+    sort_abrv (sort_list ()) ^ "\n";
+    (* Function Symbols *)
+    fn_def_stm (fn_list ());
+    dec_eq_fn;
+    arity_def_stm (fn_list ());
+    fn_abrv (fn_list ()) ^ "\n";
+    (* Rules and Rewriting *)
+    rules_def_stm data.trs;
+    afs_df_stm data.trs "trs" ^ "\n"
+  ]

@@ -17,7 +17,7 @@ Rules: [
   map G (cons U V) => cons (G U) (map G V)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(add) = Lam[y0;y1].3 + 3*y0 ;
   J(cons) = Lam[y0;y1].3 + 2*y1 ;
   J(id) = Lam[y0].1 ;
@@ -25,4 +25,4 @@ Interpretation: [
   J(nil) = 3 ;
   J(s) = Lam[y0].3 ;
   J(zero) = 3
-]
+}

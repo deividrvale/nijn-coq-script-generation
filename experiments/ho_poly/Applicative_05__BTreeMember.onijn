@@ -23,7 +23,7 @@ Rules: [
   member S (fork T X Y) => IF (lt S X) (member S T) (IF (eq S X) true (member S Y))
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(eq) = Lam[y0;y1].1 ;
   J(false) = 0 ;
   J(fork) = Lam[y0;y1;y2].3 + 3*y0 + 3*y0*y1 + 3*y0*y2 + 3*y1 + 3*y1*y2 + 3*y2 ;
@@ -34,4 +34,4 @@ Interpretation: [
   J(s) = Lam[y0].3 + 3*y0 ;
   J(true) = 0 ;
   J(zero) = 3
-]
+}

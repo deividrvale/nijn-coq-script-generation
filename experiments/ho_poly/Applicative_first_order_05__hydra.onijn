@@ -27,7 +27,7 @@ Rules: [
   filter2 false K V W => filter K W
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(cons) = Lam[y0;y1].3 + y0 ;
   J(copy) = Lam[y0;y1;y2].3*y0 + 3*y0*y1 + 3*y0*y2 ;
   J(f) = Lam[y0].0 ;
@@ -40,4 +40,4 @@ Interpretation: [
   J(s) = Lam[y0].3 + 3*y0 ;
   J(true) = 3 ;
   J(zero) = 3
-]
+}

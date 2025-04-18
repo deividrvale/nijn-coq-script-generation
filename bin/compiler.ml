@@ -59,7 +59,7 @@ let compile_wanda_no_rr file =
     Wanda_parser.wanda_lexer file
   in
   let int_data = File.Wanda.process_file parsed_file
-  in File.Wanda.gen_proof_string int_data
+  in Rocq.cert_to_rocq int_data
 
 let compile str =
   if format_eq config.format WANDA && tt_eq config.tt POLY then

@@ -76,9 +76,9 @@ val afs_df_stm : Syntax.Rule.trs -> string -> string
 (** {1 Polynomial Interpretations} *)
 
 val itp_def_stm :
-  (Syntax.Term.fn * Syntax.Poly.poly_fun) list -> string -> string
-(** [itp_def_stm itp trs_name]
-    is the Coq statement declaring the interpretation of each funciton symbol in the the signature.
+  (Syntax.Term.fn * Syntax.Poly.poly_fun) list -> string -> string -> string
+(** [itp_def_stm itp itp_name trs_name]
+    is the Coq statement declaring the interpretation of each function symbol in the the signature.
     The TRS is declared with the name [trs_name]. *)
 
 (** {1 Termination Statement} *)

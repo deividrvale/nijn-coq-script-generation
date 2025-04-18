@@ -17,6 +17,7 @@ type keyword =
 | Proof   | Qed    | Defined | Definition
 | Match   | With   | End | Let | In
 | Global  | Instance | Progam | Inductive
+| Theorem
 (** The [keyword] type enumerates the keywords we support. *)
 
 val keyword_to_string : keyword -> string

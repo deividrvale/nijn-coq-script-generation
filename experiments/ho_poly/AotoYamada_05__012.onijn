@@ -23,7 +23,7 @@ Rules: [
   forsome I (cons Q R) => or (I Q) (forsome I R)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(and) = Lam[y0;y1].2 ;
   J(cons) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(false) = 0 ;
@@ -32,4 +32,4 @@ Interpretation: [
   J(nil) = 3 ;
   J(or) = Lam[y0;y1].1 ;
   J(true) = 0
-]
+}

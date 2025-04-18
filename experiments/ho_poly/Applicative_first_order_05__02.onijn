@@ -29,7 +29,7 @@ Rules: [
   filter2 false K W Q => filter K Q
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(facdot) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(cons) = Lam[y0;y1].3 + 3*y0 ;
   J(false) = 3 ;
@@ -40,4 +40,4 @@ Interpretation: [
   J(nil) = 3 ;
   J(one) = 0 ;
   J(true) = 3
-]
+}

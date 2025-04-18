@@ -7,6 +7,7 @@ type keyword =
   | Proof   | Qed      | Defined | Definition
   | Match   | With     | End     | Let | In
   | Global  | Instance | Progam  | Inductive
+  | Theorem
 
 let keyword_to_string = function
   | Require -> "Require"    | Import -> "Import"
@@ -17,7 +18,7 @@ let keyword_to_string = function
   | End -> "end"            | Let -> "let"
   | In -> "in"              | Global -> "Global"
   | Instance -> "Instance"  | Progam -> "Program"
-  | Inductive -> "Inductive"
+  | Inductive -> "Inductive"| Theorem -> "Theorem"
 
 (*-----------------------------------------------------------------------------
   Generic functions printing coq syntax

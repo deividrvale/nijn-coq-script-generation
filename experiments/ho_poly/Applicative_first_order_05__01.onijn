@@ -34,7 +34,7 @@ Rules: [
   filter2 false K V W => filter K W
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(fact3220) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(facdiv) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(facdot) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
@@ -46,4 +46,4 @@ Interpretation: [
   J(map) = Lam[G0;y1].3*y1 + 2*G0(y1) + 3*y1*G0(y1) ;
   J(nil) = 3 ;
   J(tt) = 3
-]
+}

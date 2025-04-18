@@ -10,8 +10,8 @@ Rules: [
   mapbt G (branch Y Z U) => branch (G Y) (mapbt G Z) (mapbt G U)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(branch) = Lam[y0;y1;y2].3 ;
   J(leaf) = Lam[y0].3 ;
   J(mapbt) = Lam[G0;y1].3*y1 + 3*y1*G0(y1) + 3*G0(y1)
-]
+}

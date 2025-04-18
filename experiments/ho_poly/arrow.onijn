@@ -9,8 +9,8 @@ Rules: [
   lessthan (arrow X Y) (arrow Z U) => and (lessthan Z X) (lessthan Y U)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(and) = Lam[y0;y1].0 ;
   J(arrow) = Lam[y0;y1].3 + 3*y0 + 3*y1 ;
   J(lessthan) = Lam[y0;y1].0
-]
+}

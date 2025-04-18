@@ -19,7 +19,7 @@ Rules: [
   append (cons R S) T => cons R (append S T)
 ]
 
-Interpretation: [
+Certificate(Poly) = {
   J(append) = Lam[y0;y1].y0 ;
   J(concat) = Lam[y0].y0 ;
   J(cons) = Lam[y0;y1].2 ;
@@ -27,4 +27,4 @@ Interpretation: [
   J(map) = Lam[G0;y1].y1 + 3*y1*G0(y1) + 3*G0(0) + 3*G0(y1) ;
   J(nil) = 3 ;
   J(node) = Lam[y0;y1].3 + 3*y0 + 3*y1
-]
+}
